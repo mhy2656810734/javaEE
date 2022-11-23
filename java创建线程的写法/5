@@ -1,0 +1,15 @@
+package thread;
+
+/**
+ * 使用lambda表达式
+ * @author 26568
+ * @date 2022-11-23 15:46
+ */
+public class ThreadDemo5 {
+    public static void main(String[] args) {
+        Thread t = new Thread(() -> {
+            System.out.println("hello thread");
+        });
+        t.start();
+    }
+}
