@@ -1,0 +1,18 @@
+package thread;
+
+/**
+ * 使用匿名内部类,实现Runnable接口
+ * @author 26568
+ * @date 2022-11-23 15:44
+ */
+public class ThreadDemo4 {
+    public static void main(String[] args) {
+        Thread t = new Thread(new Runnable(){
+            @Override
+            public void run() {
+                System.out.println("hello thread");
+            }
+        });
+        t.start();
+    }
+}
