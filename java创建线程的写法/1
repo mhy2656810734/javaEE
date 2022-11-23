@@ -1,0 +1,34 @@
+package thread;
+
+/**
+ * 继承Thread,重写run
+ * @author 26568
+ * @date 2022-11-23 15:21
+ */
+class MyThread extends Thread {
+    @Override
+    public void run() {
+        while (true) {
+            System.out.println("hello thead");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+}
+public class TheadDemo1 {
+    public static void main(String[] args)  {
+        Thread t = new MyThread();
+        t.start();
+        while(true) {
+            System.out.println("hello main");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+}
