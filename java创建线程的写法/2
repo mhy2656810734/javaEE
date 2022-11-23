@@ -1,0 +1,20 @@
+package thread;
+
+/**
+ * 实现Runnable接口
+ * @author 26568
+ * @date 2022-11-23 15:38
+ */
+class MyRunnable implements Runnable {
+    @Override
+    public void run() {
+        System.out.println("hello thread");
+    }
+}
+public class ThreadDemo2 {
+    public static void main(String[] args) {
+        Runnable runnable = new MyRunnable();
+        Thread t = new Thread(runnable);
+        t.start();
+    }
+}
