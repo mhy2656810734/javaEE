@@ -1,0 +1,30 @@
+public class demo {
+    public static void main(String[] args) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < 3; i++) {
+                    System.out.println("hello thread");
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        },"mythread");
+       // t.setDaemon(true); 设置成守护线程
+        t.start();// 创建新线程
+        while (true) {
+            try {
+                Thread.sleep(1000);
+                System.out.println(t.isAlive());
+                //如果t的run还没跑,isAlive就是false
+              // 如果t的run正在跑,isAlive就是true
+                //如果t的run跑完了,isAlive就是false
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+}
