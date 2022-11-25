@@ -1,0 +1,25 @@
+package thread;
+
+/**
+ * 使用标志位来控制线程是否要结束
+ * @author 26568
+ * @date 2022-11-25 13:55
+ */
+public class ThreadDemo6 {
+    public static boolean flag = true;
+    public static void main(String[] args) throws InterruptedException {
+        Thread t = new Thread(() -> {
+            while (flag) {
+                System.out.println("hello");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        t.start();
+        Thread.sleep(3000);
+        flag = false;
+    }
+}
