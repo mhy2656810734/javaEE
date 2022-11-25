@@ -1,0 +1,31 @@
+package thread;
+
+
+public class ThreadDemo7 {
+    public static void main(String[] args) throws InterruptedException {
+        Thread t = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                System.out.println("hello thread");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                   // break;// 终止线程
+                    // 等待3秒再进行终止,交给程序猿处理
+//                    try {
+//                        Thread.sleep(3000);
+//                    } catch (InterruptedException ex) {
+//                        throw new RuntimeException(ex);
+//                    }
+//                    break;
+                }
+            }
+        });
+        t.start();
+        Thread.sleep(3000);
+        t.interrupt();
+        //Interrupt会做两件事
+        //1.把线程内部的标志位(boolean)设置成true
+        //2.如果线程在进行sleep,就会出发异常,把sleep唤醒.但是sleep在唤醒的时候,还会做一件事,把刚才设置的这个标志位,再设置回false(清空了标志位).
+    }
+}
