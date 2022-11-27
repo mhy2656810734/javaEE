@@ -1,0 +1,61 @@
+//  给定一个很长的数组 (长度 1000w), 通过随机数的方式生成 1-100 之间的整数.
+//            实现代码, 能够创建两个线程, 对这个数组的所有元素求和.
+//    其中线程1 计算偶数下标元素的和, 线程2 计算奇数下标元素的和.
+//            最终再汇总两个和, 进行相加
+//    记录程序的执行时间.
+package thread;
+
+import java.util.Random;
+
+/**
+ * @author 26568
+ * @date 2022-11-27 13:01
+ */
+class Counter1 {
+    public int[] arr;
+    public int sum1 = 0;// 偶数和
+    public int sum2 = 0;// 奇数和
+    public Counter1() {
+        arr = new int[10000000];
+        Random random = new Random();
+        for (int i = 0; i < 10000000; i++) {
+            arr[i] = random.nextInt(97)+2;// 1 ~ 100 之间的数字
+        }
+    }
+    // 对偶数求和
+    public void count1(int n) {
+        this.sum1 += n;
+    }
+    // 对奇数求和
+    public void count2(int n) {
+        this.sum2 += n;
+    }
+}
+public class ThreadDemo12 {
+    public static void main(String[] args) {
+        Counter1 counter1 = new Counter1();
+        long begin = System.currentTimeMillis();
+        // 创建两个线程分别执行求奇数和求偶数和
+        Thread t1 = new Thread(() -> {
+            for (int i = 0; i < 10000000; i +=2) {
+                counter1.count1(counter1.arr[i]);
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            for (int i = 0; i < 10000000; i +=2) {
+                counter1.count2(counter1.arr[i]);
+            }
+        });
+        t1.start();
+        t2.start();
+        try {
+            t1.join();
+            t2.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("最终和:"+(counter1.sum1+counter1.sum2));
+        long end = System.currentTimeMillis();
+        System.out.println("执行时间:"+(end-begin)+"ms");
+    }
+}
