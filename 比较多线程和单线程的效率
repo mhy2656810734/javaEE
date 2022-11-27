@@ -1,0 +1,54 @@
+package thread;
+
+/**
+ * 比较多线程和单线程效率
+ * @author 26568
+ * @date 2022-11-26 21:08
+ */
+public class ThreadDemo9 {
+    public static void main(String[] args) {
+       // serial();
+        concurrency();
+    }
+    // 串行执行,一个线程完成
+    public static void serial() {
+        // 获取ms级时间戳
+        long begin = System.currentTimeMillis();
+        long a = 0;
+        for (long i = 0; i < 100_0000_0000L;i++) {
+            a++;
+        }
+        long b = 0;
+        for (long i = 0; i < 100_0000_0000L;i++) {
+            b++;
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("执行时间"+(end-begin)+"ms");
+    }
+    // 多线程
+    public static void concurrency() {
+        long begin = System.currentTimeMillis();
+        Thread t1 = new Thread(() -> {
+            long a = 0;
+            for (long i = 0; i < 100_0000_0000L;i++) {
+                a++;
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            long b = 0;
+            for (long i = 0; i < 100_0000_0000L;i++) {
+                b++;
+            }
+        });
+        t1.start();
+        t2.start();
+        try {
+            t1.join();
+            t2.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("执行时间"+(end-begin)+"ms");
+    }
+}
