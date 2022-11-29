@@ -1,0 +1,42 @@
+package thread;
+
+/**
+ * @author 26568
+ * @date 2022-11-29 13:53
+ */
+
+public class ThreadDemo14 {
+    public static void main(String[] args) {
+        // 为了解决死锁问题 约定:jiangyou是1号  cu是2号 约定先拿小的再拿大的 ,此时师娘就不能先拿cu了,必须先拿jiangyou
+        Object jiangyou = new Object();
+        Object cu = new Object();
+        Thread tanglaoshi = new Thread(() -> {
+            // 先对酱油上锁
+            synchronized (jiangyou){
+                try {
+                    Thread.sleep(1000);// 为了让师娘拿到醋
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                synchronized (cu) {
+                    System.out.println("汤老师把酱油和醋都拿到了");
+                }
+            }
+        });
+        Thread shiniang = new Thread(() -> {
+            synchronized (jiangyou) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                synchronized (cu) {
+                    System.out.println("师娘把醋和酱油都拿到了");
+                }
+            }
+        });
+        tanglaoshi.start();
+        shiniang.start();
+
+    }
+}
