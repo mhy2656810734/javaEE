@@ -1,0 +1,34 @@
+package thread;
+
+import java.util.Scanner;
+class MyCounter {
+    // 修饰这个变量  让每次都重新读取这个变量的内存内容
+    volatile public  int flag = 0;
+
+}
+/**
+ * volatile
+ * @author 26568
+ * @date 2022-12-01 14:38
+ */
+public class ThreadDemo15 {
+
+    public static void main(String[] args) {
+        MyCounter myCounter = new MyCounter();
+        Thread t1 = new Thread(() -> {
+            // 只进行空循环
+            while (myCounter.flag == 0) {
+
+            }
+            System.out.println("循环结束");
+        });
+        Thread t2 = new Thread(() -> {
+            // 修改flag的值
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("请输入要修改后的值");
+            myCounter.flag = scanner.nextInt();
+        });
+        t1.start();
+        t2.start();
+    }
+}
