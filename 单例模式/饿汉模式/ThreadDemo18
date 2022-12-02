@@ -1,0 +1,26 @@
+package thread;
+
+/**
+ * 饿汉模式的单例模式
+ * @author 26568
+ * @date 2022-12-02 12:40
+ */
+// 保证Sing]leton只能创建出一个实例
+class Singleton {
+    // 在此处,先将这个实例创建出来
+    private static Singleton instance = new Singleton();
+    // 如果需要获取instance 这个唯一实例,需要通过Singleton.getInstance() 方法来获取
+    public static Singleton getInstance() {
+        return instance;
+    }
+    // 为了避免Singleton不小心复制出多份来
+    // 把构造方法设置成私有的,在类外面,就无法通过 new Singleton的方式创建这个Singleton这个实例了
+    private Singleton(){};
+}
+public class ThreadDemo18 {
+    public static void main(String[] args) {
+        Singleton s = Singleton.getInstance();
+        Singleton s2 = Singleton.getInstance();
+        System.out.println(s == s2);
+    }
+}
