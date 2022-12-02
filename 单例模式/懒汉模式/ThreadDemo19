@@ -8,7 +8,8 @@ package thread;
 // 保证Sing]leton只能创建出一个实例
 class Singleton {
     // 在此处,先将这个实例创建出来
-    private static Singleton instance = new Singleton();
+    //  volatile 禁止指令重排序
+    private volatile static Singleton instance = new Singleton();
     // 如果需要获取instance 这个唯一实例,需要通过Singleton.getInstance() 方法来获取
     public static Singleton getInstance() {
         return instance;
