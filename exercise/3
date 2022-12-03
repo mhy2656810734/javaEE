@@ -1,0 +1,23 @@
+package thread;
+
+/**
+ * @author 26568
+ * @date 2022-12-03 9:55
+ */
+// Runnable作用:描述一个要执行的任务
+class MRunnable implements Runnable {
+    @Override
+    public void run() {
+        System.out.println("hello thread");
+    }
+}
+public class ThreadDemo20 {
+    public static void main(String[] args) {
+        // 这里只是描述了一个任务
+        Runnable runnable = new MyRunnable();
+        // 将这个任务交给线程来执行
+        Thread t = new Thread(runnable);
+        t.start();
+
+    }
+}
