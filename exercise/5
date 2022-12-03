@@ -1,0 +1,33 @@
+package thread;
+
+/**
+ * @author 26568
+ * @date 2022-12-03 9:55
+ */
+class ThreadDemo20 {
+    public static void main(String[] args) {
+        Thread t = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                System.out.println("hello Thread");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    break;
+                }
+            }
+        });
+        t.start();
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        t.interrupt();
+    }
+}
