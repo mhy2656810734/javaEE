@@ -1,0 +1,17 @@
+package thread;
+
+/**
+ * @author 26568
+ * @date 2022-12-03 9:55
+ */
+class ThreadDemo20 {
+    public static void main(String[] args) {
+      Thread t = new Thread(new Runnable() {// 此处创建了一个类,实现了Runnable,同时创建了类的实例,并且传给Thread的构造方法
+          @Override
+          public void run() {
+              System.out.println("hello thread");
+          }
+      });
+      t.start();
+    }
+}
