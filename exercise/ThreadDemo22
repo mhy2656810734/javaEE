@@ -1,0 +1,42 @@
+package thread;
+
+/**
+ * @author 26568
+ * @date 2022-12-05 10:42
+ */
+class MyCount {
+    public  int count = 0;
+    synchronized public void add() {
+       synchronized (this) {
+           count++;
+       }
+    }
+}
+public class ThreadDemo22 {
+    public static void main(String[] args) {
+        // 创建一个实例
+        MyCount myCount = new MyCount();
+        // 创建两个线程,调用5万次 add 方法
+        Thread t1 = new Thread(() -> {
+            for (int i = 0; i < 50000; i++) {
+                myCount.add();
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            for (int i = 0; i < 50000; i++) {
+                myCount.add();
+            }
+        });
+        t1.start();
+        t2.start();
+        // 等待两个线程结束
+        try {
+            t1.join();
+            t2.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        // 打印最终的结果
+        System.out.println(myCount.count);
+    }
+}
