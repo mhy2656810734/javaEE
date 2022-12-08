@@ -1,0 +1,30 @@
+package thread;
+
+/**
+ * @author 26568
+ * @date 2022-12-05 10:42
+ */
+
+public class ThreadDemo22 {
+    public static boolean flag = true;
+    public static void main(String[] args) {
+        Thread t = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                System.out.println("hello thread");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    break;
+                }
+            }
+        });
+        t.start();
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        t.interrupt();
+    }
+}
