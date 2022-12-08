@@ -1,0 +1,51 @@
+package thread;
+
+import com.sun.xml.internal.stream.util.ThreadLocalBufferAllocator;
+import netscape.security.UserTarget;
+
+import java.util.Scanner;
+
+/**
+ * @author 26568
+ * @date 2022-12-05 10:42
+ */
+
+public class ThreadDemo22 {
+    public static void main(String[] args) throws InterruptedException {
+        Object object1 = new Object();
+        Object object2 = new Object();
+        Thread t1 = new Thread(() -> {
+            System.out.print('C'+" ");
+            synchronized (object1) {
+                object1.notify();
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            synchronized (object1) {
+                try {
+                    object1.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            System.out.print("B"+" ");
+            synchronized (object2) {
+                object2.notify();
+            }
+        });
+        Thread t3 = new Thread(() -> {
+            synchronized (object2) {
+                try {
+                    object2.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            System.out.println('A');
+        });
+        t2.start();
+        t3.start();
+        Thread.sleep(1000);
+        t1.start();// 为了确保t2和t3都执行到wait操作
+    }
+}
