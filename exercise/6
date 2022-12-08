@@ -1,0 +1,38 @@
+package thread;
+
+/**
+ * 观察线程的状态
+ * @author 26568
+ * @date 2022-12-04 10:42
+ */
+class Count3 {
+    public int count = 0;
+    // 对add方法加锁  实际是对调用add方法的那个对象加锁
+   synchronized public void add() {
+        count++;
+    }
+}
+public class ThreadDemo21 {
+    public static void main(String[] args) {
+        Count3 count3 = new Count3();
+        Thread t1 = new Thread(() -> {
+            for (int i = 0; i < 50000; i++) {
+                count3.add();
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            for (int i = 0; i < 50000; i++) {
+                count3.add();
+            }
+        });
+        t1.start();
+        t2.start();
+        try {
+            t1.join();
+            t2.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(count3.count);
+    }
+}
