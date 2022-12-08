@@ -1,0 +1,54 @@
+package thread;
+
+import netscape.security.UserTarget;
+
+/**
+ * @author 26568
+ * @date 2022-12-05 10:42
+ */
+
+public class ThreadDemo22 {
+    public static void main(String[] args) {
+       //count1();
+        count2();
+    }
+    public static void count1() {
+        long begin = System.currentTimeMillis();
+        long a = 0;
+        for (long i = 0; i < 100_0000_0000L; i++) {
+            a++;
+        }
+        long b = 0;
+        for (long i = 0; i < 100_0000_0000L; i++) {
+            b++;
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("时间"+(end-begin));
+    }
+    public static void count2() {
+        long begin = System.currentTimeMillis();
+        Thread t1 = new Thread(() -> {
+            long a = 0;
+            for (long i = 0; i < 100_0000_0000L; i++) {
+                a++;
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            long b = 0;
+            for (long i = 0; i < 100_0000_0000L; i++) {
+                b++;
+            }
+        });
+        t1.start();
+        t2.start();
+        try {
+            t1.join();
+            t2.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("耗时"+(end - begin));
+    }
+
+}
