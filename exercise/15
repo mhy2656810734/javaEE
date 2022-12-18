@@ -1,0 +1,53 @@
+package thread;
+
+import javax.swing.plaf.synth.SynthRadioButtonMenuItemUI;
+
+/**
+ * @author 26568
+ * @date 2022-12-01 15:29
+ */
+public class ThreadDemo17 {
+    public static void main(String[] args) throws InterruptedException {
+        // 创建两个对象
+        // object1 供线程t1 和 线程 t2使用  object2 供 线程t2和线程t3使用
+        // 先让线程3调用object2的wait  然后线程2调用object1.wait  唤醒后 调用 object2.notify
+        // 然后线程1先执行,执行完后调用object1.notify
+        Object object1 = new Object();
+        Object object2 = new Object();
+        // 创建三个线程
+        Thread t1 = new Thread(() -> {
+                    System.out.print('c');
+                    synchronized (object1) {
+                        object1.notify();
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            synchronized (object1) {
+                try {
+                    object1.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            System.out.print('b');
+            synchronized (object2) {
+                object2.notify();
+            }
+        });
+        Thread t3 = new Thread(() -> {
+            synchronized (object2) {
+                try {
+                    object2.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            System.out.print('a');
+        });
+       // 为了让线程2和线程3先wait ,后面执行线程1
+        t2.start();
+        t3.start();
+        Thread.sleep(500);
+        t1.start();
+    }
+}
