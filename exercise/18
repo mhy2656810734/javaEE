@@ -1,0 +1,23 @@
+package thread;
+
+/**
+ * @author 26568
+ * @date 2022-12-03 9:55
+ */
+class MyThread extends Thread{
+    @Override
+    public void run() {
+        while (true) {
+            System.out.println("hello thread");
+        }
+    }
+}
+public class ThreadDemo20 {
+    public static void main(String[] args) {
+        Thread t = new MyThread();
+        t.start();
+        while (true) {
+            System.out.println("hello main");
+        }
+    }
+}
