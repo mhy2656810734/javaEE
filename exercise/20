@@ -136,7 +136,52 @@ public class ThreadDemo22 {
 //            throw new RuntimeException(e);
 //        }
 //        flag = false;
-        // 使用Thread自带的标志位进行终止
+
+        // b.使用Thread自带的标志位进行终止
+//        Thread t = new Thread(() -> {
+//            while (!Thread.currentThread().isInterrupted()) {
+//                System.out.println("hello Thread");
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                   e.printStackTrace();
+//                   //break; 立即终止
+//                    // 一段时间后终止
+//                    try {
+//                        Thread.sleep(1000);
+//                    } catch (InterruptedException ex) {
+//                        throw new RuntimeException(ex);
+//                    }
+//                    break;
+//                }
+//            }
+//        });
+//        t.start();
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//        t.interrupt();
+        // A.等待一个线程
+        Thread t = new Thread(() -> {
+            for (int i = 0; i < 3; i++) {
+                System.out.println("hello Thread");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        t.start();
+        System.out.println("join 之前");
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("join 之后");
     }
     public static boolean flag = true;
 }
