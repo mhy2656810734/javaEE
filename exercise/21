@@ -1,0 +1,59 @@
+package thread;
+
+import com.sun.xml.internal.stream.util.ThreadLocalBufferAllocator;
+import netscape.security.UserTarget;
+
+import java.util.Scanner;
+
+/**
+ * @author 26568
+ * @date 2022-12-05 10:42
+ */
+// 比较单线程和多线程的效率
+public class ThreadDemo22 {
+    public static void main(String[] args)  {
+        //serial();
+        concurency();
+    }
+    // 单线程
+    public static void serial() {
+        long begin = System.currentTimeMillis();
+        long a = 0;
+        long b = 0;
+        for (long i = 0; i < 100_0000_0000L; i++) {
+            a++;
+        }
+        for (long i = 0; i < 100_0000_0000L; i++) {
+            b++;
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("单线程执行时间"+(end-begin)+" ms");
+    }
+    // 多线程
+    public static void concurency() {
+        long begin = System.currentTimeMillis();
+
+        Thread t1 = new Thread(() -> {
+            long a = 0;
+            for (long i = 0; i < 100_0000_0000L;i++) {
+                a++;
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            long b = 0;
+            for (long i = 0; i < 100_0000_0000L;i++) {
+                b++;
+            }
+        });
+        t1.start();
+        t2.start();
+        try {
+            t1.join();
+            t2.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("多线程耗时"+(end - begin)+" ms");
+    }
+}
