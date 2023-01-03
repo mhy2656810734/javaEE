@@ -1,0 +1,108 @@
+package thread;
+
+import com.sun.xml.internal.stream.util.ThreadLocalBufferAllocator;
+import netscape.security.UserTarget;
+
+import java.util.Scanner;
+
+/**
+ * @author 26568
+ * @date 2022-12-05 10:42
+ */
+class MyCount{
+//    public int count = 0;
+//    public synchronized void add() {
+//        count++;
+//    }
+    volatile public int flag = 0;
+}
+public class ThreadDemo22 {
+    public static void main(String[] args) throws InterruptedException {
+        // 1.查看线程的状态
+//       Thread t = new Thread(() ->{
+//           for (int i = 0; i < 100; i++) {
+//               try {
+//                   Thread.sleep(10);
+//               } catch (InterruptedException e) {
+//                   throw new RuntimeException(e);
+//               }
+//           }
+//       });
+//        System.out.println("start之前的状态:"+t.getState());
+//        t.start();
+//        for (int i = 0; i < 100; i++) {
+//            System.out.println("t执行中的状态:"+t.getState());
+//        }
+//        t.join();
+//        System.out.println("t执行结束后的状态:"+t.getState());
+        // 2.线程安全问题的代码
+//        MyCount myCount = new MyCount();
+//        Thread t1 = new Thread(() -> {
+//            for (int i = 0; i < 50000; i++) {
+//                myCount.add();
+//            }
+//        });
+//        Thread t2 = new Thread(() -> {
+//            for (int i = 0; i < 50000; i++) {
+//                myCount.add();
+//            }
+//        });
+//        t1.start();
+//        t2.start();
+//        t1.join();
+//        t2.join();
+//        System.out.println(myCount.count);
+
+        // 3.内存可见性为问题代码
+//        MyCount myCount = new MyCount();
+//        // 一个线程读
+//        Thread t1 = new Thread(() -> {
+//            while (myCount.flag == 0) {
+//
+//            }
+//            System.out.println("循环结束");
+//        });
+//        // 一个线程写
+//        Thread t2 = new Thread(() -> {
+//            Scanner scanner = new Scanner(System.in);
+//            System.out.println("请输入要修改flag的值");
+//            myCount.flag = scanner.nextInt();
+//        });
+//        t1.start();
+//        t2.start();
+
+        // 4.死锁  解决死锁问题的方法:给锁编号 按照一个固定顺序来加锁
+        Object jiangyou  = new Object();
+        Object cu = new Object();
+        Thread t1 = new Thread(() -> {
+            // 对jiangyou先加锁
+            synchronized (jiangyou) {
+                // 让t2拿到cu
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                // 对cu加锁
+                synchronized (cu) {
+                    System.out.println("t1线程拿到了醋和酱油");
+                }
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            synchronized(cu) {
+                // 让t1拿到jiangyou
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                synchronized (jiangyou) {
+                    System.out.println("t2拿到了醋和酱油");
+                }
+            }
+        });
+        t1.start();
+        t2.start();
+    }
+}
