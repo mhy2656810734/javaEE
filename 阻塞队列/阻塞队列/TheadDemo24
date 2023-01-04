@@ -1,0 +1,77 @@
+package thread;
+
+/**
+ * @author 26568
+ * @date 2023-01-04 19:00
+ */
+// 循环队列 -> 阻塞队列
+class MyBlockingQueue {
+    private int[] items = new int[1000];
+    private int head = 0;
+    private int tail = 0;
+    private int size = 0;
+    // 入队列
+    public void put(int value) throws InterruptedException {
+        synchronized (this) {
+            // 满了就不能再入队列
+            // while的作用是判断当wait被唤醒后条件是否还满足
+            while (size == items.length) {
+                // return;
+                // 满了以后阻塞等待
+                this.wait();
+            }
+            // 放到tail位置
+            items[tail] = value;
+            tail++;
+            // 避免越界
+            if (tail >= items.length) {
+                tail = 0;
+            }
+            // 或者取模
+            // tail = tail % item.length;
+            size++;
+            // 放入元素以后唤醒
+            this.notify();
+        }
+    }
+    // 出队列
+    public Integer take() throws InterruptedException {
+        int result = 0;
+        synchronized (this) {
+            // 为空不能出队列
+            while (size == 0) {
+                //return null;
+                // 空了阻塞等待
+                this.wait();
+            }
+            // 取出队列元素
+            result = items[head];
+            head++;
+            if (head >= items.length) {
+                head = 0;
+            }
+            size--;
+            // 取出一个元素以后唤醒wait
+            this.notify();
+        }
+        return result;
+    }
+}
+public class ThreadDemo24 {
+    public static void main(String[] args) throws InterruptedException {
+        MyBlockingQueue myBlockingQueue = new MyBlockingQueue();
+        myBlockingQueue.put(1);
+        myBlockingQueue.put(2);
+        myBlockingQueue.put(3);
+        myBlockingQueue.put(4);
+        int res = 0;
+        res = myBlockingQueue.take();
+        System.out.println(res);
+        res = myBlockingQueue.take();
+        System.out.println(res);
+        res = myBlockingQueue.take();
+        System.out.println(res);
+        res = myBlockingQueue.take();
+        System.out.println(res);
+    }
+}
