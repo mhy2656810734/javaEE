@@ -14,7 +14,6 @@ class MyBlockingQueue {
     public void put(int value) throws InterruptedException {
         synchronized (this) {
             // 满了就不能再入队列
-            // while的作用是判断当wait被唤醒后条件是否还满足
             while (size == items.length) {
                 // return;
                 // 满了以后阻塞等待
@@ -59,19 +58,46 @@ class MyBlockingQueue {
 }
 public class ThreadDemo24 {
     public static void main(String[] args) throws InterruptedException {
-        MyBlockingQueue myBlockingQueue = new MyBlockingQueue();
-        myBlockingQueue.put(1);
-        myBlockingQueue.put(2);
-        myBlockingQueue.put(3);
-        myBlockingQueue.put(4);
-        int res = 0;
-        res = myBlockingQueue.take();
-        System.out.println(res);
-        res = myBlockingQueue.take();
-        System.out.println(res);
-        res = myBlockingQueue.take();
-        System.out.println(res);
-        res = myBlockingQueue.take();
-        System.out.println(res);
+//        MyBlockingQueue myBlockingQueue = new MyBlockingQueue();
+//        myBlockingQueue.put(1);
+//        myBlockingQueue.put(2);
+//        myBlockingQueue.put(3);
+//        myBlockingQueue.put(4);
+//        int res = 0;
+//        res = myBlockingQueue.take();
+//        System.out.println(res);
+//        res = myBlockingQueue.take();
+//        System.out.println(res);
+//        res = myBlockingQueue.take();
+//        System.out.println(res);
+//        res = myBlockingQueue.take();
+//        System.out.println(res);
+        MyBlockingQueue queue = new MyBlockingQueue();
+        Thread customer = new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(500);
+                    int result = queue.take();
+                    System.out.println("消费:"+result);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        customer.start();
+        Thread producer = new Thread(() -> {
+            int result = 0;
+            while (true) {
+                try {
+                    queue.put(result);
+                    System.out.println("生产:"+result);
+                    result++;
+                   // Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        producer.start();
     }
 }
