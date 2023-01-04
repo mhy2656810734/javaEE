@@ -1,0 +1,34 @@
+package thread;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+/**
+ * @author 26568
+ * @date 2023-01-04 19:14
+ */
+// 定时器
+public class TheadDemo25 {
+    public static void main(String[] args) {
+        Timer timer =  new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("任务1");
+            }
+        },3000);
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("任务2");
+            }
+        },2000);
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("任务3");
+            }
+        },1000);
+       
+    }
+}
