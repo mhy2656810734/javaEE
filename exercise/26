@@ -1,0 +1,94 @@
+package thread;
+
+import com.sun.xml.internal.stream.util.ThreadLocalBufferAllocator;
+import netscape.security.UserTarget;
+
+import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+/**
+ * @author 26568
+ * @date 2022-12-05 10:42
+ */
+// 循环队列
+class MyBloking {
+    private int[] items = new int[1000];
+    private int head = 0;
+    private int tail = 0;
+    private int size = 0;
+    // 入队列
+    public void put(int value) {
+        synchronized (this) {
+            // 满不入
+            // 判断当wait被唤醒后是否还满足条件
+            if (size == items.length) {
+                // 满了就阻塞等待
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            items[tail] = value;
+            tail++;
+            if (tail >= items.length) {
+                tail = 0;
+            }
+            size++;
+            // 放入一个元素就唤醒之前的阻塞
+            this.notify();
+        }
+    }
+    // 出队列
+    public Integer take() {
+        int result = 0;
+        synchronized (this) {
+            // 空不出
+            if (size == 0) {
+                // 为空就阻塞等待
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            result = items[head];
+            head++;
+            size--;
+            if (head >= items.length) {
+                head = 0;
+            }
+            // 出一个就唤醒满的
+            this.notify();
+        }
+        return result;
+    }
+}
+public class ThreadDemo22 {
+    public static void main(String[] args) throws InterruptedException {
+        // 再走一次生产者和消费者的代码
+        MyBloking queue = new MyBloking();
+        Thread customer = new Thread(() -> {
+            while (true) {
+                int res = queue.take();
+                System.out.println("消费元素:"+res);
+            }
+        });
+        customer.start();
+        Thread producer = new Thread(() -> {
+            int res = 0;
+            while (true) {
+                System.out.println("生产元素:"+res);
+                queue.put(res);
+                res++;
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        producer.start();
+    }
+}
