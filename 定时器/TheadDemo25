@@ -2,107 +2,33 @@ package thread;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.PriorityBlockingQueue;
 
 /**
- * 自定义计时器
  * @author 26568
- * @date 2023-01-04 19:37
+ * @date 2023-01-04 19:14
  */
-// 表示一个定时器中的任务
-class MyTask implements Comparable<MyTask>{
-    // 要执行任务的内容
-    private Runnable runnable;
-    // 任务在什么时候执行(用毫秒时间戳来表示)
-    private long time;
-    // 构造方法
-    public MyTask(Runnable runnable,long time) {
-        this.runnable = runnable;
-        this.time = time;
-    }
-    // 获取执行时间
-    public long getTime() {
-        return time;
-    }
-    // 执行任务
-    public void run() {
-        runnable.run();
-    }
-
-    @Override
-    public int compareTo(MyTask o) {
-        return (int)(this.time - o.time);
-    }
-}
-// 计时器类
-class MyTimer{
-    // 一个扫描线程:负责判断从优先级队列中取出的队首元素是否要执行
-    private Thread t =  null;
-    // 优先级阻塞队列: 负责存储任务
-    private PriorityBlockingQueue<MyTask> queue = new PriorityBlockingQueue<>();
-    // 提供一个schedule方法
-    // 第一个参数是定时器中的任务内容,第二个参数是该任务在多少毫秒后执行
-    public void schedule(Runnable runnable,long after)  {
-                                                // 注意时间换算
-        MyTask myTask = new MyTask(runnable,System.currentTimeMillis()+after);
-        queue.put(myTask);
-        // 添加新任务就进行通知操作
-        synchronized (this) {
-            this.notify();
-        }
-    }
-    // 构造方法创建扫描线程
-    public MyTimer() {
-        t = new Thread(() -> {
-           while (true) {
-               try {
-                   // 取出队首元素,看看队首元素的时间是否到了
-                   // 如果时间没到,就把任务放回优先级队列
-                   // 如果时间到了 执行任务
-                   synchronized (this) { // 将锁的范围扩大,保证执行notify的时候 wait已经执行过了
-                       MyTask myTask = queue.take();
-                       // 获取当前时间
-                       long curTime = System.currentTimeMillis();
-                       if (curTime < myTask.getTime()) {
-                           // 还没到执行时间
-                           queue.put(myTask);
-                           // 阻塞等待
-                           this.wait(myTask.getTime() - curTime);
-                       } else {
-                           // 到时间了 执行任务
-                           myTask.run();
-                       }
-                   }
-               } catch (InterruptedException e) {
-                   throw new RuntimeException(e);
-               }
-           }
-        });
-        t.start();
-    }
-}
-
-public class TheadDemo26 {
+// 定时器
+public class TheadDemo25 {
     public static void main(String[] args) {
-        MyTimer myTimer = new MyTimer();
-        myTimer.schedule(new Runnable() {
+        Timer timer =  new Timer();
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 System.out.println("任务1");
             }
         },3000);
-        myTimer.schedule(new Runnable() {
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 System.out.println("任务2");
             }
         },2000);
-        myTimer.schedule(new Runnable() {
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 System.out.println("任务3");
             }
         },1000);
+
     }
 }
