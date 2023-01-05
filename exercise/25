@@ -1,0 +1,46 @@
+package thread;
+
+import com.sun.xml.internal.stream.util.ThreadLocalBufferAllocator;
+import netscape.security.UserTarget;
+
+import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+/**
+ * @author 26568
+ * @date 2022-12-05 10:42
+ */
+// 生产者和消费者
+public class ThreadDemo22 {
+    public static void main(String[] args) throws InterruptedException {
+        // 阻塞队列
+        BlockingQueue<Integer> queue = new LinkedBlockingQueue<>();
+        // 消费者
+        Thread customer = new Thread(() -> {
+            while (true) {
+                try {
+                    int res = queue.take();
+                    System.out.println("消费元素:"+res);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        customer.start();
+        Thread producer = new Thread(() -> {
+            int result = 0;
+            while (true) {
+                try {
+                    queue.put(result);
+                    System.out.println("生产元素:"+result);
+                    result++;
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        producer.start();
+    }
+}
