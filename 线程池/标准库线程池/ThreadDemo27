@@ -1,0 +1,25 @@
+package thread;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/**
+ * @author 26568
+ * @date 2023-01-05 17:19
+ */
+public class ThreadDemo27 {
+    public static void main(String[] args) {
+        ExecutorService pool = Executors.newFixedThreadPool(10);
+        for (int i = 0; i < 1000; i++) {
+            int n = i;
+            // submit 方法:给线程池提供若干个任务
+            pool.submit(new Runnable() {
+                @Override
+                public void run() {
+                                              // 不能+i  变量捕获 i被修改 n未被修改
+                    System.out.println("hello:"+n);
+                }
+            });
+        }
+    }
+}
