@@ -22,7 +22,7 @@ class MyBloking {
         synchronized (this) {
             // 满不入
             // 判断当wait被唤醒后是否还满足条件
-            if (size == items.length) {
+            while (size == items.length) {
                 // 满了就阻塞等待
                 try {
                     this.wait();
@@ -45,7 +45,7 @@ class MyBloking {
         int result = 0;
         synchronized (this) {
             // 空不出
-            if (size == 0) {
+            while (size == 0) {
                 // 为空就阻塞等待
                 try {
                     this.wait();
