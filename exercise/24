@@ -81,7 +81,7 @@ public class ThreadDemo22 {
         t2.start();
         t3.start();
         // 为了让t2和t3先执行阻塞等待操作
-        Thread.sleep(500);
+        Thread.sleep(1000);
         t1.start();
     }
 }
