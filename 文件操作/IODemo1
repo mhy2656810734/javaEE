@@ -1,0 +1,19 @@
+import java.io.File;
+import java.io.IOException;
+
+/**
+ * @author 26568
+ * @date 2023-01-11 17:16
+ */
+public class IODemo1 {
+    public static void main(String[] args) throws IOException {
+        // 不要求在d: 这里真的有个text.jaba
+        //File file = new File("d:/text.txt");绝对路径
+        File  file = new File("./text/txt");// 相对路径
+        System.out.println(file.getName());  // file的纯文件名称
+        System.out.println(file.getParent());// file的父目录文件名称
+        System.out.println(file.getPath()); // file的文件路径
+        System.out.println(file.getAbsolutePath()); // file的绝对文件路径
+        System.out.println(file.getCanonicalFile());// 修饰过的绝对路径
+    }
+}
