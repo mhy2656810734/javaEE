@@ -1,0 +1,27 @@
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
+/**
+ * 使用字节流来读取文件
+ * @author 26568
+ * @date 2023-01-11 19:12
+ */
+public class IODemo6 {
+    public static void main(String[] args) throws IOException {
+        // 文件必须保证存在
+        // 创建对象的时候,  使用绝对路径或者相对路径都是可以的 也可以使用File对象
+        InputStream inputStream = new FileInputStream("d:/text.txt");
+        // 进行读操作
+        while (true) {
+            int b = inputStream.read();
+            if (b == -1) {
+                break;
+            }
+            System.out.printf("%x\n",(byte)b);
+        }
+        // 关闭文件
+        inputStream.close();
+    }
+}
