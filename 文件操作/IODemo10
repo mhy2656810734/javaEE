@@ -1,0 +1,23 @@
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Scanner;
+
+/**
+ * Scanner
+ * @author 26568
+ * @date 2023-01-12 14:13
+ */
+public class IODemo10 {
+    public static void main(String[] args) {
+        try (InputStream inputStream = new FileInputStream("d:/text.txt")) {
+            Scanner scanner = new Scanner(inputStream);
+            scanner.next();
+            //Scanner 的close 本质上是要关闭内部流对象(inputStream)
+            // 但是 此时的inputStream对象已经被try()关闭了 里面的Scaner 不关闭也没事
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
