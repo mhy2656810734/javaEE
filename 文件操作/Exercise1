@@ -1,0 +1,43 @@
+import java.io.*;
+import java.util.Scanner;
+
+/**
+ *  拷贝文件
+ * @author 26568
+ * @date 2023-01-13 9:47
+ */
+public class Exercise1 {
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("请输入你要拷贝的文件");
+        String srcPath = scan.next();
+        System.out.println("请输入你要拷贝的目的路径");
+        String destPath = scan.next();
+        // 判断输入的路径是否正确
+        File srcFile = new File(srcPath);
+        if (!srcFile.isFile()) {
+            System.out.println("您输入的源文件有误");
+            return;
+        }
+        File destFile = new File(destPath);
+        if (destFile.isFile()) {
+            // 目的路径已经存在文件
+            System.out.println("你输入的目的路径有误");
+            return;
+        }
+        // 此时开始拷贝
+        try (InputStream inputStream = new FileInputStream(srcFile);
+             OutputStream outputStream = new FileOutputStream(destFile)) {
+            // 循环读 然后写
+            while (true) {
+                int b = inputStream.read();
+                if (b == -1) {
+                    break;
+                }
+                outputStream.write(b);
+            }
+        }  catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
