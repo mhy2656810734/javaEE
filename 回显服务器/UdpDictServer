@@ -1,0 +1,31 @@
+package network;
+
+import java.io.IOException;
+import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * 查字典服务器
+ * @author 26568
+ * @date 2023-01-14 19:04
+ */
+public class UdpDictServer extends UdpEchoServer{
+    private Map<String,String> dict = new HashMap<>();
+    public UdpDictServer(int port) throws SocketException {
+        super(port);
+        dict.put("cat","小猫");
+        dict.put("dog","小狗");
+        dict.put("fuck","卧槽");
+    }
+    @Override
+    public String process(String request) {
+        // 查字典的过程
+        // 这个方法表示:如果map中有与k值(request)配对的,就直接返回,没有的话,就返回这个默认值“没有你..."
+        return dict.getOrDefault(request,"没有你要查找的单词");
+    }
+    public static void main(String[] args) throws IOException {
+        UdpDictServer dictServer = new UdpDictServer(9090);
+        dictServer.start();
+    }
+}
