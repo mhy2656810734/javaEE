@@ -1,0 +1,52 @@
+package network;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+
+/**
+ * UDP版本的回显服务器
+ * @author 26568
+ * @date 2023-01-14 10:00
+ */
+public class UdpEchoServer1 {
+    // 根据这个DatagramSocket类来抽象表示网卡
+    private DatagramSocket socket = null;
+    // 构造方法指定一个具体的端口号
+    public UdpEchoServer1(int port) throws SocketException {
+        socket = new DatagramSocket(port);
+    }
+    public void start() throws IOException {
+        System.out.println("服务器启动");
+        while (true) {
+            // 1.接收请求并解析
+            // 构造一个空的DatagramPacket对象 通过receive填充内容(来自于网卡)
+            DatagramPacket requestPacket = new DatagramPacket(new byte[4096],4096);
+            socket.receive(requestPacket);
+            // 将这个请求构造成一个字符串                                        实际的数据报长度
+            String request = new String(requestPacket.getData(),0,requestPacket.getLength());
+            // 2.根据请求计算响应
+            String response = process(request);
+            // 3.将这个响应写回客户端
+            // 发送也需要一个输出型参数
+            // 此时就需要根据响应进行构造参数                                                     计算具体的字节长度
+            DatagramPacket responsePacket = new DatagramPacket(response.getBytes(),response.getBytes().length,
+                    requestPacket.getSocketAddress()); // 获取请求的ip+端口号
+            socket.send(responsePacket);
+            // 4.打印出 请求响应的中间结果
+            System.out.printf("[%s %d]: req: %s, resp: %s\n", requestPacket.getAddress().toString(),
+                    requestPacket.getPort(),request,response);
+        }
+    }
+
+    private String process(String request) {
+        return request;
+    }
+
+    public static void main(String[] args) throws IOException {
+        // 程序员自己指定 1024->65535之间即可
+        UdpEchoServer1 server1 = new UdpEchoServer1(9090);
+        server1.start();
+    }
+}
