@@ -1,0 +1,88 @@
+package network;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/**
+ * @author 26568
+ * @date 2023-01-15 10:13
+ */
+public class TcpEchoServer1 {
+    private ServerSocket socket = null;
+    public TcpEchoServer1(int port) throws IOException {
+        socket = new ServerSocket(port);
+    }
+    public void start() throws IOException {
+        System.out.println("服务器启动");
+        // 线程池
+        // 使用CacheThreadPoll的原因是因为这里客户端的数量不清楚
+        ExecutorService threadPool = Executors.newCachedThreadPool();
+        // 多个客户端
+        while (true) {
+            Socket clientSocket = socket.accept();
+            //processConnection(clientSocket);
+            // 多线程  主线程只负责接受是否有客户端  新线程处理客户端操作
+//            Thread t = new Thread(() -> {
+//                processConnection(clientSocket);
+//            });
+//            t.start();
+            threadPool.submit(() -> {
+                processConnection(clientSocket);
+            });
+        }
+    }
+
+    private void processConnection(Socket clientSocket) {
+        // 一个用户可能有多个请求
+        System.out.printf("[%s:%d] 客户端上线!\n",clientSocket.getInetAddress(),clientSocket.getPort());
+            // 通过流对象进行操作
+            try(InputStream inputStream = clientSocket.getInputStream();
+                OutputStream outputStream = clientSocket.getOutputStream()) {
+               while (true) {
+                   // 1.获取请求并解析
+                   Scanner scanner = new Scanner(inputStream);
+                   // 判断是否有下次请求
+                   if (!scanner.hasNext()) {
+                       System.out.printf("[%s:%d] 客户端下线!\n",clientSocket.getInetAddress(),clientSocket.getPort());
+                       break;
+                   }
+                   String request = scanner.next();
+                   // 2.根据请求计算响应
+                   String response = process(request);
+                   // 3.构造响应并将响应写回客户端
+                   PrintWriter printWriter = new PrintWriter(outputStream);
+                   // 最后末尾加上换行符
+                   printWriter.println(response);
+                   // 手动刷新缓冲区
+                   printWriter.flush();
+                   System.out.printf("[%s:%d] req:%s; resp:%s\n",clientSocket.getInetAddress(),clientSocket.getPort(),
+                           request,response);
+               }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                // 必须执行释放资源操作
+                try {
+                    clientSocket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+    }
+
+    private String process(String request) {
+        return request;
+    }
+
+    public static void main(String[] args) throws IOException {
+        TcpEchoServer1 server1 = new TcpEchoServer1(9090);
+        server1.start();
+    }
+}
