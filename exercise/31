@@ -1,0 +1,52 @@
+package network;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+
+/**
+ * @author 26568
+ * @date 2023-01-17 11:00
+ */
+public class UdpEchoServer1 {
+    // 本质上应该操作的是网卡,但是网卡不好直接操作,于是就将网卡抽象成一个socket文件
+    DatagramSocket socket = null;
+    public UdpEchoServer1(int port) throws SocketException {
+        socket = new DatagramSocket(port);
+    }
+    // 利用这个方法启动服务器
+    public void start() throws IOException {
+        System.out.println("服务器启动");
+        // 请求可能有多条
+        while (true) {
+            // 1.读取请求并解析
+            // 使用一个空数据报对象进行填充
+            DatagramPacket requestPacket = new DatagramPacket(new byte[4096],4096);
+            // 没有客户端就阻塞等待
+            socket.receive(requestPacket);
+            // 解析请求  将数据报中的数据用一个方式拿出来                         数据报的实际长度
+            String request = new String(requestPacket.getData(),0, requestPacket.getLength());
+            // 2.根据请求计算响应
+            String response = process(request);
+            // 3.构造响应并写回客户端
+            // 此时就需要根据响应进行创建数据报对象
+            DatagramPacket responsePacket = new DatagramPacket(response.getBytes(),response.getBytes().length,
+                    requestPacket.getSocketAddress());
+            socket.send(responsePacket);
+            // 4.打印结果
+            System.out.printf("[%s:%d] req:%s; resp:%s\n",requestPacket.getAddress().toString(),requestPacket.getPort(),
+                    request,response);
+        }
+
+    }
+
+    public String process(String request) {
+        return request;
+    }
+
+    public static void main(String[] args) throws IOException {
+        UdpEchoServer1 server1 = new UdpEchoServer1(9090);
+        server1.start();
+    }
+}
