@@ -1,0 +1,29 @@
+package network;
+
+import java.io.IOException;
+import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * @author 26568
+ * @date 2023-01-17 11:46
+ */
+public class UdpEchoDictServer extends UdpEchoServer1{
+    private Map<String,String> map = new HashMap<>();
+    public UdpEchoDictServer(int port) throws SocketException {
+        super(port);
+        map.put("cat","小猫");
+        map.put("dog","小狗");
+    }
+    @Override
+    public String process(String request) {
+        return map.getOrDefault(request,",没有你要翻译的单词");
+    }
+
+    public static void main(String[] args) throws IOException {
+        UdpEchoDictServer server = new UdpEchoDictServer(9091);
+        server.start();
+    }
+
+}
