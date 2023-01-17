@@ -1,0 +1,148 @@
+package network;
+
+import jdk.internal.util.xml.impl.Input;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/**
+ * @author 26568
+ * @date 2023-01-17 15:00
+ */
+public class TcpEchoServer1  {
+    private ServerSocket socket = null;
+    // 创建的时候指定一个端口号
+    public TcpEchoServer1(int port) throws IOException {
+        socket = new ServerSocket(port);
+    }
+    public void start() throws IOException {
+        System.out.println("服务器启动!");
+        // 可能有多个客户端
+        // 线程池  线程池中的线程个数一般不固定
+        ExecutorService threadPool = Executors.newCachedThreadPool();
+        while (true) {
+            // 每有一个客户端就返回一个Socket对象
+            Socket clientSocket = socket.accept();
+            //processConnection(clientSocket);
+            // 多线程
+//            Thread t = new Thread(() -> {
+//                processConnection(clientSocket);
+//            });
+//            t.start();
+            threadPool.submit(() -> {
+                processConnection(clientSocket);
+            });
+        }
+    }
+
+    private void processConnection(Socket clientSocket) {
+        // 通过流对象来进行操作
+        try(InputStream inputStream = clientSocket.getInputStream();
+            OutputStream outputStream = clientSocket.getOutputStream()) {
+            System.out.println("客户端上线!");
+            // 一个用户可能有多个请求
+            while (true) {
+                // 1.读取请求并解析
+                Scanner scanner = new Scanner(inputStream);
+                // 判断是否有下个请求
+                if (!scanner.hasNext()) {
+                    System.out.printf("[%s:%d]   客户端下线!!!\n",clientSocket.getInetAddress(),clientSocket.getPort());
+                    break;
+                }
+                String request = scanner.next();
+                // 2.根据请求计算响应
+                String response = process(request);
+                // 3.将响应写回客户端
+                PrintWriter printWriter = new PrintWriter(outputStream);
+                // println 在写入结果的后面添加\n  此时客户端就可以接收到信息
+                printWriter.println(response);
+                // 手动刷新缓冲区
+                printWriter.flush();
+                // 4.打印结果
+                System.out.printf("[%s:%d] req:%s; resp:%s\n",clientSocket.getInetAddress(),clientSocket.getPort(),
+                        request,response);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            // 每创建一个socket对象 相当于占用文件描述符表的一项 所以必须释放
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String process(String request) {
+        return request;
+    }
+
+    public static void main(String[] args) throws IOException {
+        TcpEchoServer1 server1 = new TcpEchoServer1(9090);
+        server1.start();
+    }
+}
+package network;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.Scanner;
+
+/**
+ * @author 26568
+ * @date 2023-01-17 15:14
+ */
+public class TcpClient {
+    private Socket socket = null;
+    // 构造的时候必须传入服务器的ip和地址
+    // 构造方法可以自动识别字符串类型的点分十进制IP地址
+    public TcpClient(String serverIp,int port) throws IOException {
+        socket = new Socket(serverIp,port);
+    }
+    public void start() {
+        try (InputStream inputStream = socket.getInputStream();
+             OutputStream outputStream = socket.getOutputStream()) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("客户端启动");
+            while (true) {
+                // 1.从控制台读取请求
+                System.out.print("> ");
+                String request = scanner.next();
+                if (request.equals("exit")) {
+                    System.out.println("goodbye");
+                    break;
+                }
+                // 2.发送请求
+                // 借助字符流来发送
+                PrintWriter printWriter = new PrintWriter(outputStream);
+                // 需要一个换行符来表示读取结束
+                printWriter.println(request);
+                // 手动刷新缓冲器确定发送成功
+                printWriter.flush();
+                // 3.接收响应并解析
+                Scanner responScan = new Scanner(inputStream);
+                String response = responScan.next();
+                // 4.显示结果
+                System.out.println(response);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        TcpClient client = new TcpClient("127.0.0.1",9090);
+        client.start();
+    }
+}
