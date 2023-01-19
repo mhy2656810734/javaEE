@@ -1,0 +1,60 @@
+import java.io.*;
+import java.util.Scanner;
+
+/**
+ *
+ * @author 26568
+ * @date 2023-01-13 9:47
+ */
+public class Exercise {
+    public static void main(String[] args) throws IOException {
+        // 相对路径
+     //  File file = new File("./text.txt");
+       //file.createNewFile();
+        // 绝对路径
+        //File file = new File("d:/text.txt");
+
+       // System.out.println(file.exists());// 是否存在
+      // file.delete();
+      //  System.out.println(file.exists());
+
+//        File file = new File("./text.txt");
+//        File dest = new File("./dest.txt");
+        // 创建一级目录
+        //file.mkdir();
+        // 创建多级目录
+       // System.out.println(file.delete());
+    //    file.renameTo(dest);
+
+        // 使用字节流读取文件
+        // 必须保证文件存在
+        // 创建对象的时候 可以使用相对/绝对路径  也可以是file对象
+        InputStream inputStream = new FileInputStream("d:/text.txt");
+//        while (true) {
+//            int b = inputStream.read();
+//            // 确保已经读完文件
+//            if (b == -1) {
+//                break;
+//            }
+//            System.out.printf("%x\n",(byte)b);
+//        }
+        while (true) {
+            // 创建缓冲区  提高IP效率
+            byte[] buf = new byte[1024];
+            // 返回实际读取的长度
+            // 第二轮读取会覆盖第一轮读取到的数据 所以需要及时处理
+            int len = inputStream.read(buf);
+            System.out.println("len:"+len);
+            if (len == -1) {
+                // 读取结束
+                break;
+            }
+            // 此时读取到的数据就存在buf数组中了
+            for (int i = 0; i < len; i++) {
+                System.out.printf("%x\n",buf[i]);
+            }
+        }
+        // 关闭文件
+        inputStream.close();
+    }
+}
