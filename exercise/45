@@ -1,0 +1,53 @@
+import java.io.*;
+import java.util.Scanner;
+
+/**
+ *
+ * @author 26568
+ * @date 2023-01-13 9:47
+ */
+public class Exercise {
+    public static void main(String[] args)  {
+        // 对于output来说,默认情况下打开一个文件 会先清空这个文件中原有的内容
+        // 如果不想清空  流对象还提供了一个"追加写"对象.不清空原有内容,在其后追加写
+        // try with resource 自动释放资源
+//       try( OutputStream outputStream = new FileOutputStream("d:/text.txt");) {
+//           outputStream.write(97);
+//           outputStream.write(98);
+//           outputStream.write(65);
+//       } catch (IOException e) {
+//           throw new RuntimeException(e);
+//       }
+        // 字符流读
+//        try (Reader reader = new FileReader("d:/text.txt")) {
+//            while (true) {
+//                int ch = reader.read();
+//                if (ch == -1) {
+//                    break;
+//                }
+//                System.out.println(" "+(char)ch);
+//            }
+//        }  catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+
+        // 字符流写
+//        try (Writer writer = new FileWriter("d:/text.txt")) {
+//            writer.write("hello world");
+//            // 手动刷新缓冲区 确定写入内容
+//            writer.flush();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+        
+        // Scanner 和 流对象
+        try (InputStream inputStream = new FileInputStream("d:/text.txt")) {
+            Scanner scanner = new Scanner(inputStream);
+            scanner.next();
+            // sacn本质上是要关闭内部流对象(inputStream)
+            // 但是 此时的inputStream 对象 已经被try关闭了 所以不关闭也没事
+        }  catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
