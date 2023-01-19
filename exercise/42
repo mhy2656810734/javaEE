@@ -1,0 +1,25 @@
+import java.io.*;
+import java.util.Scanner;
+
+/**
+ *
+ * @author 26568
+ * @date 2023-01-13 9:47
+ */
+public class Exercise {
+    public static void main(String[] args) throws IOException {
+        // 相对路径
+       File file = new File("./text.txt");
+       file.createNewFile();
+        // 绝对路径
+        //File file = new File("d:/text.txt");
+        System.out.println(file.getParent());// 获取父目录
+        System.out.println(file.getName());// file的文件名称
+        System.out.println(file.getPath()); // file的文件路径
+        System.out.println(file.getAbsolutePath());// file的绝对路径
+        System.out.println(file.getCanonicalPath());// 修饰过的file绝对路径
+        System.out.println(file.isFile());// 是不是文件
+        System.out.println(file.isDirectory());// 是不是目录
+        System.out.println(file.exists());// 是否存在
+    }
+}
