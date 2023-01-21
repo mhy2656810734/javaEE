@@ -1,0 +1,67 @@
+package thread;
+
+import java.sql.SQLOutput;
+import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ * @author 26568
+ * @date 2023-01-11 19:27
+ */
+
+public class Exercise {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+//        // ReentrantLock 使用lock 和unlock进行加锁he解锁
+//        // 参数为true 是公平锁3
+//        ReentrantLock reentrantLock = new ReentrantLock(true);
+//        // 使用该方法进行加锁 加不上放弃 参数版本:超过时间还没加锁就放弃
+//        reentrantLock.tryLock();
+//        Callable<Integer> callable = new Callable<Integer>() {
+//            // 相当于run方法
+//            @Override
+//            public Integer call() throws Exception {
+//                int sum = 0;
+//                for (int i = 0; i < 101;i++) {
+//                    sum += i;
+//                }
+//                return sum;
+//            }
+//        };
+//        // 搭配这个类进行执行
+//        FutureTask<Integer> futureTask = new FutureTask<>(callable);
+//        Thread t = new Thread(futureTask);
+//        t.start();
+//        Integer result = futureTask.get();
+//        System.out.println(result);
+        // 这些原子类的内部使用了CAS实现自增自减 此时进行这些类操作不需要加锁也是线程安全的
+        AtomicInteger count = new AtomicInteger(0);
+        Thread t1 = new Thread(() -> {
+            for (int i = 0; i < 50000; i++) {
+                count.getAndIncrement(); // count++
+//                count.incrementAndGet(); // ++count
+//                count.getAndDecrement();// count--
+//                count.decrementAndGet();// --count
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            for (int i = 0; i < 50000; i++) {
+                count.getAndIncrement(); // count++
+//                count.incrementAndGet(); // ++count
+//                count.getAndDecrement();// count--
+//                count.decrementAndGet();// --count
+            }
+        });
+        t1.start();
+        t2.start();
+        t1.join();
+        t2.join();
+        System.out.println(count);
+    }
+}
