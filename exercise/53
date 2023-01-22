@@ -1,0 +1,110 @@
+package thread;
+
+import java.sql.SQLOutput;
+import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ *  自定义定时器
+ * @author 26568
+ * @date 2023-01-11 19:27
+ */
+// 任务类 描述要执行的任务是什么 以及执行时间
+    // 自定义类型必须实现compare接口
+class MyTask2 implements Comparable<MyTask2>{
+    // 任务要执行的时间
+    public long time;
+    // 要执行的任务是什么
+    private Runnable runnable;
+
+    @Override
+    public int compareTo(MyTask2 o) {
+        return (int)(this.time - o.time);
+    }
+    public MyTask2(Runnable runnable,long time) {
+        this.runnable = runnable;
+        this.time = time;
+    }
+    // 获取当前任务的时间
+    public long getTime() {
+        return this.time;
+    }
+    // 执行任务
+    public void run() {
+        this.runnable.run();
+    }
+}
+// 定时器类
+class MyTimer2 {
+    // 一个扫描线程负责扫描
+    private Thread t = null;
+    // 优先级队列中存储要执行的任务
+    private PriorityBlockingQueue<MyTask2> queue = new PriorityBlockingQueue<>();
+    // 在构造方法中构造t线程
+    public MyTimer2() {
+        t = new Thread(() -> {
+            // 循环执行
+            while (true) {
+                try {
+                    synchronized (this) {
+                        // 取出队头任务
+                        MyTask2 myTask = queue.take();
+                        // 首先判断当前时间和优先级队首时间的大小
+                        long curTime = System.currentTimeMillis();
+                        // 如果当前时间小于队首时间 说明还要继续加入队列阻塞等待
+                        if (curTime < myTask.getTime()) {
+                            // 继续入优先级队列
+                            queue.put(myTask);
+                            // 然后计算阻塞等待时间
+                            // 唤醒操作应当放到每次创建一个任务那里
+                            this.wait(myTask.getTime() - curTime);
+                        } else {
+                            // 此时说明这个任务要执行了
+                            myTask.run();
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+        });
+        t.start();
+    }
+    // 提供一个schedule方法
+    public void schedule(Runnable runnable,long after) {
+        // 创建任务
+        // 注意这里的时间换算 应当是当前时间+after
+        MyTask2 myTask = new MyTask2(runnable,System.currentTimeMillis()+after);
+        // 创建好任务后添加进阻塞队列
+        queue.put(myTask);
+        // 唤醒操作
+        synchronized (this) {
+            this.notify();
+        }
+    }
+}
+public class Exercise {
+    public static void main(String[] args) throws InterruptedException {
+        MyTimer2 myTimer2 = new MyTimer2();
+        myTimer2.schedule(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("任务二执行");
+            }
+        },3000);
+        myTimer2.schedule(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("任务一执行");
+            }
+        },1000);
+    }
+}
