@@ -1,0 +1,46 @@
+package thread;
+
+import java.sql.SQLOutput;
+import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ *
+ * @author 26568
+ * @date 2023-01-11 19:27
+ */
+// 生产者和消费者 好处:解耦合  2.削峰填谷 保证系统的稳定性
+public class Exercise {
+    public static void main(String[] args) throws InterruptedException {
+        BlockingQueue<Integer> queue = new LinkedBlockingQueue<>();
+        Thread customer = new Thread(() -> {
+            while (true) {
+                try {
+                    int result = queue.take();
+                    System.out.println("消费元素:"+result);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        customer.start();
+        Thread producer = new Thread(() -> {
+            int count = 0;
+            while (true) {
+                try {
+                    queue.put(count);
+                    System.out.println("生产元素:"+count);
+                    count++;
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        producer.start();
+    }
+}
