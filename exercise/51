@@ -1,0 +1,48 @@
+package thread;
+
+import java.sql.SQLOutput;
+import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ *  wait 和 notify
+ * @author 26568
+ * @date 2023-01-11 19:27
+ */
+public class Exercise {
+    public static void main(String[] args)  {
+        Object object = new Object();
+        Thread t1 = new Thread(() -> {
+            synchronized (object) {
+                object.notify();
+                System.out.println("t1执行结束");
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            synchronized (object) {
+                try {
+                    object.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                System.out.println("t2执行结束");
+            }
+        });
+        // 必须先让t2执行wait
+        t2.start();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("t2调用wait之后的状态:"+t2.getState());
+        t1.start();
+    }
+}
