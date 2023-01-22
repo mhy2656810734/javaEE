@@ -1,0 +1,43 @@
+package thread;
+
+import java.sql.SQLOutput;
+import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ * @author 26568
+ * @date 2023-01-11 19:27
+ */
+// 懒汉模式
+class SingletonLazy1 {
+    // 避免指令重排序
+    private volatile static SingletonLazy1 stance = null;
+    public static SingletonLazy1 getInstance() {
+        // 第一个if 先判断是否需要加锁
+        if (stance == null) {
+            synchronized (SingletonLazy1.class) {
+                // 在多线程下可能有其他线程已经创建好对象了 所以还需要再判断一下
+                if (stance == null) {
+                    stance = new SingletonLazy1();
+                }
+            }
+        }
+        return stance;
+    }
+    private SingletonLazy1() {}
+}
+public class Exercise {
+    public static void main(String[] args)  {
+        SingletonLazy1 s1 = SingletonLazy1.getInstance();
+        SingletonLazy1 s2= SingletonLazy1.getInstance();
+        System.out.println(s1 == s2);
+
+    }
+}
