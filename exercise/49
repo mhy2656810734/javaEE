@@ -1,0 +1,34 @@
+package thread;
+
+import java.sql.SQLOutput;
+import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ * @author 26568
+ * @date 2023-01-11 19:27
+ */
+// 饿汉模式
+class Singleton1 {
+    // 在类加载时期就创建好
+    private volatile static  Singleton1 singleton = new Singleton1();
+    public static Singleton1 getSingleton() {
+        return singleton;
+    }
+    // 避免通过构造方法创造出实例
+    private Singleton1() {}
+}
+public class Exercise {
+    public static void main(String[] args)  {
+        Singleton1 singleton1 = Singleton1.getSingleton();
+        Singleton1 singleton2 = Singleton1.getSingleton();
+        System.out.println(singleton1 == singleton2);
+    }
+}
