@@ -1,0 +1,35 @@
+package thread;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/**
+ * 使用线程池`
+ * 在循环中不能直接加i的原因主要是因为:生命周期
+ * i是主线程的局部变量 (在主线程的栈上) 随着主线程这里的代码块执行结束也就销毁了
+ * 很可能这里的for已经执行结束了,但是当前run的任务在线程池里面还没排到,此时i已经要销毁了
+ * 这个run方法属于Runnable这个方法的执行时机,不是立刻马上执行,而是在未来的某个时间执行(在线程池中排到了就执行)
+ * 为了避免生命周期的差异,导致后续执行run的时候,i已经销毁,于是就有了变量捕获,也就是让run方法把刚才主线程的i往run方法的栈上拷贝一份
+ * (定义run方法的时候,偷偷把当前i值记录下来,后续执行run的时候,就创建一个也叫i的局部变量,并且把这个值赋值过去)
+ * 在jdk1.8之前只能捕获final修饰的变量,但是由于太过麻烦  1.8开始,不一定要求是final修饰的变量,只要这个代码中没有修改这个变量也可以捕获
+ * @author 26568
+ * @date 2023-01-05 17:19
+ */
+public class ThreadDemo27 {
+    public static void main(String[] args) {
+        // Executors 是工厂类   newFixedThreadPool是工厂方法
+        // 线程池中的线程都是前台线程
+        ExecutorService pool = Executors.newFixedThreadPool(10);
+        for (int i = 0; i < 1000; i++) {
+            int n = i;
+            // submit 方法:给线程池提供若干个任务
+            pool.submit(new Runnable() {
+                @Override
+                public void run() {
+                                              // 不能+i  变量捕获 i被修改 n未被修改
+                    System.out.println("hello:"+n);
+                }
+            });
+        }
+    }
+}
