@@ -1,0 +1,92 @@
+package thread;
+
+import java.sql.SQLOutput;
+import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ *
+ * @author 26568
+ * @date 2023-01-11 19:27
+ */
+// 循环队列
+class MyBlockingQueue1 {
+    private int[] items = new int[1000];
+    private int head = 0;
+    private int tail = 0;
+    private int size = 0;
+    // 添加元素
+    public void put(int x) throws InterruptedException {
+        synchronized (this) {
+            // 如果满了就阻塞等待
+            while (size >= items.length) {
+              //  return;
+                this.wait();
+            }
+            // 没满就放到tail位置
+            items[tail] = x;
+            tail++;
+            if (tail >= items.length) {
+                tail = 0;
+            }
+            size++;
+            this.notify();
+        }
+    }
+    // 删除元素
+    public Integer take() throws InterruptedException {
+        int val;
+        synchronized (this) {
+            // 为空不能删除
+            while (size == 0) {
+                //return null;
+                this.wait();
+            }
+            // 每次从队头取数据
+            val = items[head];
+            head++;
+            if (head >= items.length) {
+                head = 0;
+            }
+            size--;
+            // 取出一个唤醒put中的wait
+            this.notify();
+        }
+        return val;
+    }
+}
+public class Exercise {
+    public static void main(String[] args) throws InterruptedException {
+        MyBlockingQueue1 queue1 = new MyBlockingQueue1();
+        // 使用消费者生产者模型
+        Thread customer = new Thread(() -> {
+            while (true) {
+                try {
+                    int val = queue1.take();
+                    System.out.println("消费元素:"+val);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        Thread producer  = new Thread(() -> {
+            int count = 0;
+            while (true){
+                try {
+                    queue1.put(count);
+                    System.out.println("生产元素:"+count);
+                    count++;
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        customer.start();
+        producer.start();
+    }
+}
