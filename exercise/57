@@ -1,0 +1,42 @@
+package thread;
+
+import java.sql.SQLOutput;
+import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ *
+ * @author 26568
+ * @date 2023-01-11 19:27
+ */
+// 线程池
+public class Exercise {
+    public static void main(String[] args) throws InterruptedException {
+        // 这里采用了工厂模式的设计模式  Executors是工厂类  newFixedThreadPool是工厂方法
+        // 工厂方法本质上就是使用普通方法代替构造方法
+      ExecutorService pool = Executors.newFixedThreadPool(10);
+        for (int i = 0; i < 1000; i++) {
+            // 这里涉及到变量捕获 不能直接加i 主要原因:生命周期
+            // i是主线程的局部变量,在主线程的栈上 会随着主线程的代码块执行完毕而销毁 
+            // 但是可能当前run方法在线程池中还没有排到,但是i已经准备要销毁了
+            // 这个run方法属于Runnable的执行时机,不是马上执行 而是在未来的某一时间执行(在线程池中排到)
+            // 为了避免生命周期的差异,导致执行run的时候 i已经销毁,于是就有了变量捕获
+            // 也就是让run方法将刚才的i往栈上拷贝一份,
+            // (定义run方法的时候,偷偷记录下i的值,后续执行run的时候,也创建一个局部变量i,将这个记录下的值赋值过去)
+            // 在jdk1.8之前只能捕获final修饰的变量,但是还是很麻烦,于是1.8及其以后,除了final修饰的变量,只要这个代码中没有修改这个变量的值
+            // 就可以捕获
+            
+            int n = i;
+            pool.submit(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("hello:"+n);
+                }
+            });
+        }
+    }
+}
