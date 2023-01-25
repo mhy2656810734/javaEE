@@ -1,0 +1,37 @@
+package thread;
+
+import java.sql.SQLOutput;
+import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ *
+ * @author 26568
+ * @date 2023-01-11 19:27
+ */
+// 线程池
+
+public class Exercise {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
+        Callable<Integer> callable = new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                int sum = 0;
+                for (int i = 1; i < 101; i++) {
+                    sum += i;
+                }
+                return sum;
+            }
+        };
+        FutureTask<Integer> futureTask = new FutureTask<>(callable);
+        Thread t = new Thread(futureTask);
+        t.start();
+        // get就是获取结果 get会发生阻塞 直到callable执行结束 get才阻塞完成 才能获取到结果
+        int sum = futureTask.get();
+        System.out.println(sum);
+    }
+}
