@@ -1,0 +1,99 @@
+package thread;
+
+import java.sql.SQLOutput;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ * 定时器
+ * @author 26568
+ * @date 2023-01-11 19:27
+ */
+// 任务类
+class MyTask2 implements Comparable<MyTask2> {
+    // 任务要执行的时间
+    private long time;
+    // 任务是什么
+    private Runnable runnable;
+    public MyTask2(Runnable runnable,long time) {
+        this.runnable = runnable;
+        this.time = time;
+    }
+    @Override
+    public int compareTo(MyTask2 o) {
+        // 默认小根堆
+        return (int)(this.time - o.time);
+    }
+    public long getTime() {
+        return this.time;
+    }
+    // 执行任务
+    public void run() {
+        this.runnable.run();
+    }
+}
+// 定时器类
+class MyTimer2 {
+    // 扫描线程
+    private Thread t = null;
+    // 优先级阻塞队列
+    private PriorityBlockingQueue<MyTask2> queue = new PriorityBlockingQueue();
+    // 提供一个schedule方法
+    public void schedule(Runnable runnable,long after) {
+        // 首先创建一个任务  注意时间的换算
+        MyTask2 myTask = new MyTask2(runnable,System.currentTimeMillis()+after);
+        // 然后加入队列
+        queue.put(myTask);
+        // 每次有新任务就唤醒
+        synchronized (this) {
+            this.notify();
+        }
+    }
+    // 构造方法创建线程
+    public MyTimer2() {
+        t = new Thread(() -> {
+            // 循环取出所有任务
+            synchronized (this) {
+                while (true) {
+                    try {
+                        // 取出一个任务
+                        MyTask2 myTask = queue.take();
+                        // 记录当前时间
+                        long curTime = System.currentTimeMillis();
+                        // 判断是否要执行当前队首任务
+                        if (curTime < myTask.getTime()) {
+                            // 比当前时间要大 继续插入阻塞队列
+                            queue.put(myTask);
+                            this.wait(myTask.getTime()-curTime);
+                        } else {
+                            // 执行任务
+                            myTask.run();
+                        }
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
+        t.start();
+    }
+}
+public class Exercise {
+    public static void main(String[] args) throws InterruptedException {
+        MyTimer2 myTimer2 = new MyTimer2();
+        myTimer2.schedule(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("任务二");
+            }
+        },3000);
+        myTimer2.schedule(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("任务三");
+            }
+        },1000);
+    }
+}
