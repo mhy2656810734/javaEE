@@ -1,0 +1,55 @@
+import java.io.*;
+import java.util.Scanner;
+
+/**
+ *
+ * @author 26568
+ * @date 2023-01-13 9:47
+ */
+// 扫描目录 删除文件
+public class Exercise {
+    private static Scanner scanner = new Scanner(System.in);
+    public static void main(String[] args) throws IOException {
+        System.out.println("请输入你要删除的文件的目录");
+        String basePath = scanner.next();
+        // 判断用户输入的目录是否正确
+        File file = new File(basePath);
+        if (!file.isDirectory()) {
+            // 不是目录
+            System.out.println("您输入的路径有问题");
+            return;
+        }
+        System.out.println("请输入你要删除的文件名称");
+        String nameToDelete = scanner.next();
+        delete(file,nameToDelete);
+    }
+    public static void delete(File root,String nameToDelete) {
+        System.out.println("[delete]:"+root.getAbsolutePath());
+        // 先列出root目录下的所有文件和目录
+        File[] files = root.listFiles();
+        // 如果为空结束递归
+        if (files == null) {
+            return;
+        }
+        // 遍历这个数组判断是要递归还是要删除
+        for(File f:files) {
+            // 是目录就递归
+            if (f.isDirectory()) {
+                delete(f,nameToDelete);
+            } else {
+                // 判断这个文件是不是要删除的文件
+                if (f.getName().contains(nameToDelete)) {
+                    // 如果包含的话就让用户选择是否删除
+                    System.out.println("确定要删除"+f.getAbsolutePath()+"嘛");
+                    String choice = scanner.next();
+                    if (choice.equals("y")|| choice.equals("Y")) {
+                        f.delete();
+                        System.out.println("删除成功");
+                    } else {
+                        System.out.println("取消删除");
+                    }
+                }
+            }
+        }
+    }
+}
