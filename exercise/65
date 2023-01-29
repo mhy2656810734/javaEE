@@ -1,0 +1,42 @@
+import java.io.*;
+import java.util.Scanner;
+
+/**
+ *
+ * @author 26568
+ * @date 2023-01-13 9:47
+ */
+// 使用字节流读取文件
+public class Exercise {
+    public static void main(String[] args) throws IOException {
+        // 对于outputStream来说 默认情况下打开一个文件会先清除这个文件中的内容
+        // 如果不想清除,使用追加写对象,追加到后面
+        // try with resource  只有继承了Closeable接口的类才能放到这里面
+//        try(OutputStream outputStream = new FileOutputStream("d:/text.txt")) {
+//            outputStream.write(100);
+//            outputStream.write(97);
+//            outputStream.write(98);
+//            outputStream.write(99);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        // 使用字符流读
+//        try (Reader reader = new FileReader("d:/text.txt")) {
+//            while (true) {
+//                int ch = reader.read();
+//                if (ch == -1) {
+//                    break;
+//                }
+//                System.out.printf("%c\n",(char)ch);
+//            }
+//        }catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        try (Writer writer = new FileWriter("d:/text.txt")) {
+            writer.write("hello world");
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
