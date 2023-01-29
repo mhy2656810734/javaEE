@@ -1,0 +1,56 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+/**
+ *
+ * @author 26568
+ * @date 2023-01-13 9:47
+ */
+// 拷贝文件
+public class Exercise {
+    public static void main(String[] args) throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("请输入要扫描的目录");
+        String root = scanner.next();
+        // 判断输入的是不是目录
+        File rootFile = new File(root);
+        if (!rootFile.isDirectory()) {
+            // 不是目录
+            System.out.println("您输入的根目录有误");
+            return;
+        }
+        // 输入字符
+        System.out.println("请输入你要查找的字符");
+        String search = scanner.next();
+        // 存储查找结果
+        List<File> list = new ArrayList<>();
+        fun(rootFile,search,list);
+        System.out.println("查找结果共"+list.size()+"个,分别是:");
+        for(File f:list) {
+            System.out.println(f.getAbsolutePath());
+        }
+    }
+    public static void fun(File rootFile,String str,List<File> list) {
+        // 首先列出root路径下的所有文件
+        File[] files = rootFile.listFiles();
+        if (files == null || files.length == 0) {
+            // 结束递归
+            return;
+        }
+        // 遍历数组
+        for(File f:files) {
+            if (f.isDirectory()) {
+                // 是目录就递归
+                fun(f,str,list);
+            } else {
+                // 是文件 判断是否包含输入的字符
+                if (f.getName().contains(str)) {
+                    // 包含就添加进list
+                    list.add(f.getAbsoluteFile());
+                }
+            }
+        }
+    }
+}
