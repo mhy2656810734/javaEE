@@ -1,0 +1,18 @@
+import java.io.*;
+import java.util.Scanner;
+
+/**
+ *
+ * @author 26568
+ * @date 2023-01-13 9:47
+ */
+public class Exercise {
+    public static void main(String[] args) throws IOException {
+        File file = new File("./text.txt");// 相对路径
+        System.out.println(file.getName());// file的纯文件名称
+        System.out.println(file.getParent());// file的父目录文件名称
+        System.out.println(file.getPath());// file的文件路径
+        System.out.println(file.getAbsoluteFile());// file的绝对文件路径
+        System.out.println(file.getCanonicalFile());// 修饰过的绝对路径
+    }
+}
