@@ -1,0 +1,46 @@
+import java.io.*;
+import java.util.Scanner;
+
+/**
+ * 进行普通文件的复制
+ * @author 26568
+ * @date 2023-01-12 14:45
+ */
+public class IODemo12 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        // 先输入要拷贝的文件
+        System.out.println("请输入要拷贝的文件");
+        String srcPath = scanner.next();
+        // 再输入要拷贝的地方
+        System.out.println("请输入要拷贝的地方");
+        String destPath = scanner.next();
+        File srcFile = new File(srcPath);
+        // 先判断用户输入的是不是一个文件
+        if (!srcFile.isFile()) {
+            // 不是文件(是个目录或者不存在)就结束操作
+            System.out.println("您当前输入的源路径有误");
+            return;
+        }
+        File destFile = new File(destPath);
+        // 如果已经存在 认为有误
+        if (destFile.isFile()) {
+            System.out.println("您当前输入的目标路径有误");
+            return;
+        }
+        // 开始进行拷贝操作
+        try (InputStream inputStream = new FileInputStream(srcFile);
+             OutputStream outputStream = new FileOutputStream(destFile)) {
+            // 取出一个自己 然后写入一个字节
+            while (true) {
+                int b = inputStream.read();
+                if (b == -1) {
+                    break;
+                }
+                outputStream.write(b);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
