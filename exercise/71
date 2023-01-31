@@ -1,0 +1,45 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+/**
+ *
+ * @author 26568
+ * @date 2023-01-13 9:47
+ */
+// 拷贝文件 将所有关键字目录全部加入
+public class Exercise {
+    public static void main(String[] args) throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("请输入你要扫描的目录");
+        String root = scanner.next();
+        File rootFile = new File(root);
+        if (!rootFile.isDirectory()) {
+            System.out.println("您输入的扫描目录有误");
+            return;
+        }
+        System.out.println("请输入要搜索的关键字");
+        String search = scanner.next();
+        List<File> list = new ArrayList<>();
+        fun(rootFile,search,list);
+        System.out.println("共查询到"+list.size()+"个");
+        for(File f:list) {
+            System.out.println(f.getAbsolutePath());
+        }
+    }
+    public static  void fun(File rootFile,String str,List<File> list) {
+        File[] files = rootFile.listFiles();
+        if (files == null || files.length == 0) {
+            return;
+        }
+        for(File f:files) {
+            if (f.getName().contains(str)) {
+                list.add(f);
+            }
+            if (f.isDirectory()) {
+                fun(f,str,list);
+            } 
+        }
+    }
+}
