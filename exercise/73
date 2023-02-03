@@ -1,0 +1,53 @@
+package network;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+
+/**
+ *Udp版本的回显服务器
+ * @author 26568
+ * @date 2023-02-03 11:23
+ */
+public class UdpEchoServer1 {
+    // 网络编程本质上是要操作网卡
+    // 但是网卡不好直接操作 于是在操作系统内核中 用一个特殊的socket文件抽象表示网卡
+    private DatagramSocket socket = null;
+    public UdpEchoServer1(int port) throws SocketException {
+      socket = new DatagramSocket(port);
+    }
+    public void start() throws IOException {
+        System.out.println("服务器启动");
+        // 需要服务很多客户端
+        while (true) {
+            // 1.接受请求并解析
+            byte[] buf = new byte[4096];
+            DatagramPacket requestPacket = new DatagramPacket(buf,4096);
+            socket.receive(requestPacket);
+            // 拿出接受到的信息构造成字符串
+            String request = new String(requestPacket.getData(),0, requestPacket.getLength());
+            // 2.根据请求计算响应
+            String response = process(request);
+            // 3.构造响应并返回客户端
+            // 要根据接受到的数据进行构造
+            DatagramPacket responsePacket = new DatagramPacket(response.getBytes(), response.getBytes().length,
+                    requestPacket.getSocketAddress());
+            socket.send(responsePacket);
+            // 4.打印相关信息
+            System.out.printf("[%s:%d] req: %s,resp:%s\n",requestPacket.getAddress().toString(),requestPacket.getPort(),
+                    request,response);
+        }
+    }
+
+    private String process(String request) {
+        return request;
+    }
+
+    public static void main(String[] args) throws IOException {
+        // 服务器的端口号可以随便指定
+        // 1024 -> 65535即可
+        UdpEchoServer1 server1 = new UdpEchoServer1(9090);
+        server1.start();
+    }
+}
