@@ -1,0 +1,29 @@
+package network;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Tcp版本的字典服务器
+ * @author 26568
+ * @date 2023-02-03 15:50
+ */
+public class TcpDictServer extends TcpEchoServer{
+    private Map<String,String> map = new HashMap<>();
+    public TcpDictServer(int port) throws IOException {
+        super(port);
+        map.put("cat","小猫");
+        map.put("dog","小狗");
+        map.put("fuck","卧槽");
+    }
+    @Override
+    public String process(String request) {
+        return map.getOrDefault(request,"没有你要查找的单词");
+    }
+
+    public static void main(String[] args) throws IOException {
+        TcpDictServer server = new TcpDictServer(9090);
+        server.start();
+    }
+}
