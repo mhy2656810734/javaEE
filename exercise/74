@@ -1,0 +1,72 @@
+package network;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/**
+ * Tcp版本的回显服务器
+ * @author 26568
+ * @date 2023-02-03 15:19
+ */
+public class TcpEchoServer1 {
+    private ServerSocket socket = null;
+    public TcpEchoServer1(int port) throws IOException {
+        socket = new ServerSocket(port);
+    }
+    public void start() throws IOException {
+        System.out.println("服务器启动!!");
+        ExecutorService pool = Executors.newCachedThreadPool();
+        while (true) {
+            // 主线程进行接收
+            Socket clientSocket = socket.accept();
+            pool.submit(() -> {
+                processConnection(clientSocket);
+            });
+        }
+    }
+
+    private void processConnection(Socket clientSocket) {
+        System.out.printf("[%s:%d]   客户端上线!\n",clientSocket.getInetAddress().toString(),clientSocket.getPort());
+        try (InputStream inputStream = clientSocket.getInputStream();
+             OutputStream outputStream = clientSocket.getOutputStream()) {
+            while (true) {
+                // 1.读取请求并解析
+                Scanner scanner = new Scanner(inputStream);
+                // 判断是否有下一个数据
+                if (!scanner.hasNext()) {
+                    System.out.printf("[%s:%d]   客户端下线\n",clientSocket.getInetAddress().toString(),clientSocket.getPort());
+                    break;
+                }
+                // 2.根据请求计算响应
+                String request = scanner.next();
+                String response = process(request);
+                // 3.构造响应并发送
+                PrintWriter writer = new PrintWriter(outputStream);
+                // 发送的响应后面带一个 换行符
+                writer.println(response);
+                writer.flush();
+                // 4.打印相关信息
+                System.out.printf("[%s:%d]  req:%s,resp:%s\n",clientSocket.getInetAddress().toString(),clientSocket.getPort(),
+                        request,response);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String process(String request) {
+        return request;
+    }
+
+    public static void main(String[] args) throws IOException {
+        TcpEchoServer1 server1 = new TcpEchoServer1(9090);
+        server1.start();
+    }
+}
