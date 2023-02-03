@@ -1,0 +1,59 @@
+package network;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+
+import java.net.Socket;
+import java.util.Scanner;
+
+/**
+ * Tcp版本的回显服务器客户端
+ * @author 26568
+ * @date 2023-02-03 15:31
+ */
+public class TcpEchoClient1 {
+    // 必须知道客户端的IP和端口号
+    Socket socket = null;
+    private String serverIp = null;
+    private int serverPort = 0;
+    public TcpEchoClient1(String serverIp,int serverPort) throws IOException {
+        // 自动识别点分十进制的ip地址
+        socket = new Socket(serverIp,serverPort);
+    }
+    public void start() {
+        System.out.println("客户端启动!!");
+        Scanner scanner = new Scanner(System.in);
+        try (InputStream inputStream = socket.getInputStream();
+             OutputStream outputStream = socket.getOutputStream()) {
+            while (true) {
+                // 1.从控制台读取请求
+                System.out.print("> ");
+                String request = scanner.next();
+                if (request.equals("exit")) {
+                    System.out.println("goodbye");
+                    break;
+                }
+                // 2.把读到的内容构造成请求并发送
+                PrintWriter writer = new PrintWriter(outputStream);
+                // 通过println发送
+                writer.println(request);
+                // 保证数据发送出去
+                writer.flush();
+                // 3.接收响应并解析
+                Scanner responseScan = new Scanner(inputStream);
+                String response = responseScan.next();
+                // 4.打印结果
+                System.out.println(response);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        TcpEchoClient1 client1 = new TcpEchoClient1("127.0.0.1",9090);
+        client1.start();
+    }
+}
