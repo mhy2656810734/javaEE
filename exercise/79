@@ -1,0 +1,32 @@
+package thread;
+
+import com.sun.xml.internal.stream.util.ThreadLocalBufferAllocator;
+import netscape.security.UserTarget;
+
+import java.util.Scanner;
+
+/**
+ * @author 26568
+ * @date 2022-12-05 10:42
+ */
+// 懒汉模式
+class SingletonLazy1 {
+    private volatile static SingletonLazy1 singletonLazy1 = null;
+    public static SingletonLazy1 getInstance() {
+        if (singletonLazy1 == null) {
+            if (singletonLazy1 == null) {
+                synchronized (SingletonLazy1.class) {
+                    singletonLazy1 = new SingletonLazy1();
+                }
+            }
+        }
+        return singletonLazy1;
+    }
+}
+public class ThreadDemo22 {
+    public static void main(String[] args) throws InterruptedException {
+        SingletonLazy1 s1 = SingletonLazy1.getInstance();
+        SingletonLazy1 s2 = SingletonLazy1.getInstance();
+        System.out.println(s1 == s2);
+    }
+}
