@@ -1,0 +1,30 @@
+package network;
+
+import java.io.IOException;
+import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * @author 26568
+ * @date 2023-02-07 9:59
+ */
+public class UdpDictServer1 extends UdpServer1 {
+    private Map<String,String> map = new HashMap<>();
+    public UdpDictServer1(int port) throws SocketException {
+        super(port);
+        map.put("cat","小猫");
+        map.put("dog","小狗");
+        map.put("fish","鱼儿");
+    }
+    // 重写process方法
+    @Override
+    public String process(String request) {
+        return map.getOrDefault(request,"没有你要查找的单词");
+    }
+
+    public static void main(String[] args) throws IOException {
+        UdpDictServer1 server1 = new UdpDictServer1(9090);
+        server1.start();
+    }
+}
