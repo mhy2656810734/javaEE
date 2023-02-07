@@ -1,0 +1,54 @@
+package network;
+
+import java.io.IOException;
+import java.net.*;
+import java.util.Scanner;
+
+/**
+ * @author 26568
+ * @date 2023-02-07 9:26
+ */
+public class UdpEchoClient1 {
+    private DatagramSocket socket = null;
+    private String serverIP = null;
+    private int serverPort = 0;
+    private Scanner scanner = new Scanner(System.in);
+    // 构造方法需要传入服务器的ip和端口号
+    public UdpEchoClient1(String serverIP,int serverPort) throws SocketException {
+        // 让服务器分配一个端口号
+        socket = new DatagramSocket();
+        this.serverIP = serverIP;
+        this.serverPort = serverPort;
+    }
+    public void start() throws IOException {
+        // 客户端请求比较多
+        System.out.println("客户端启动!!");
+        while (true) {
+            System.out.print("> ");
+            // 1.从控制台读取请求
+            String request = scanner.next();
+            if (request.equals("exit")) {
+                System.out.println("goodbye");
+                break;
+            }
+            // 2.构造请求并发送
+            // 此时就需要传入服务器的ip和端口号
+            // ip需要传入点分十进制的数据 所以需要将字符串转换
+            DatagramPacket requestPacket = new DatagramPacket(request.getBytes(),request.getBytes().length,
+                    InetAddress.getByName(serverIP),serverPort);
+            socket.send(requestPacket);
+            // 3.接收响应并解析
+            // 此时需要空对象接收
+            DatagramPacket responsePacket = new DatagramPacket(new byte[4096],4096);
+            socket.receive(responsePacket);
+            // 转换成字符串
+            String response = new String(responsePacket.getData(),0, responsePacket.getLength());
+            // 4.打印结果
+            System.out.println(response);
+        }
+    }
+    public static void main(String[] args) throws IOException {
+        UdpEchoClient1 client1 = new UdpEchoClient1("127.0.0.1",9090);
+        client1.start();
+    }
+}
