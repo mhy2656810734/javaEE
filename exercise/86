@@ -1,0 +1,87 @@
+package thread;
+
+import com.sun.xml.internal.stream.util.ThreadLocalBufferAllocator;
+import netscape.security.UserTarget;
+
+import java.util.Scanner;
+
+/**
+ * @author 26568
+ * @date 2022-12-05 10:42
+ */
+
+public class ThreadDemo22 {
+    public static void main(String[] args) throws InterruptedException {
+        // wait 和 notify
+//        Object object = new Object();
+//        Thread t1 = new Thread(() -> {
+//            System.out.println("t1wait之前");
+//            // 然后让t1等待
+//            synchronized (object) {
+//                try {
+//                    // wait操作释放锁,让其他线程可以拿到这个锁
+//                    object.wait();
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
+//            System.out.println("t1wait之后");
+//        });
+//        Thread t2 = new Thread(() ->{
+//            System.out.println("t2notify之前");
+//            synchronized (object) {
+//                object.notify();
+//            }
+//            System.out.println("t2notify之后");
+//        });
+//        // 先让t1等待,然后t2唤醒
+//        t1.start();
+//        // 必须保证先执行t1的wait  没有sleep的话,由于线程的随机调度不能保证先执行t1的wait
+//        Thread.sleep(500);
+//        t2.start();
+
+        // 按照顺序输出abc
+        Object object1 = new Object();
+        Object object2 = new Object();
+        Thread t1 = new Thread(() -> {
+            // 先输出a,然后唤醒object1
+            System.out.println('a');
+            synchronized (object1) {
+               object1.notify();
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            // 先阻塞等待
+            synchronized (object1) {
+                try {
+                    object1.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            // 然后输出b
+            System.out.println('b');
+            // 唤醒object2
+            synchronized (object2) {
+                object2.notify();
+            }
+        });
+        Thread t3 = new Thread(() -> {
+            // 先阻塞等待
+            synchronized (object2) {
+                try {
+                    object2.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            // 输出c
+            System.out.println('c');
+        });
+        t2.start();
+        t3.start();
+        // 为了让t2和t3先执行阻塞等待操作
+        Thread.sleep(1000);
+        t1.start();
+    }
+}
