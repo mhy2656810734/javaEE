@@ -1,0 +1,31 @@
+package thread;
+
+import java.util.Hashtable;
+
+/**
+ * @author 26568
+ * @date 2023-04-01 13:44
+ */
+class Singletonlazy{
+    public static Singletonlazy instance = null;
+    public static Singletonlazy getInstance() {
+        if (instance == null) {
+            synchronized (Singletonlazy.class) {
+                if (instance == null) {
+                    instance = new Singletonlazy();
+                }
+            }
+        }
+        return instance;
+    }
+    private Singletonlazy() {}
+}
+public class ThreadDemo19 {
+    public static void main(String[] args) {
+        Singletonlazy s1 = Singletonlazy.getInstance();
+        Singletonlazy s2 = Singletonlazy.getInstance();
+        System.out.println(s1 == s2);
+        Hashtable<Integer,String> hashtable = new Hashtable<>();
+        hashtable.put(1,"aaa");
+    }
+}
