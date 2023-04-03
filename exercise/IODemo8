@@ -1,0 +1,25 @@
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+
+/**
+ * 字符流读
+ * @author 26568
+ * @date 2023-01-12 14:05
+ */
+public class IODemo8 {
+    public static void main(String[] args) throws IOException {
+        try (Reader reader = new FileReader("d:/text.txt")) {
+            while (true) {
+                int ch = reader.read();
+                if (ch == -1) {
+                    break;
+                }
+                System.out.println(" "+(char)ch);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
