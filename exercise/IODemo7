@@ -1,0 +1,25 @@
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
+/**
+ * 写文件
+ * @author 26568
+ * @date 2023-01-12 11:40
+ */
+public class IODemo7 {
+    public static void main(String[] args) {
+        // 对于outputStream来说.默认情况下,打开一个文件 会先清空这个文件原有的内容
+        // 如果不想清空,流对象还提供了一个"追加写"对象 通过这个就可以实现不清空内容,把新内容追加写到后面
+        // try 这个语法叫做; try with resource
+        try (OutputStream outputStream = new FileOutputStream("d:/text.txt")) {
+            outputStream.write(97);
+            outputStream.write(98);
+            outputStream.write(99);
+            outputStream.write(100);
+        }  catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
