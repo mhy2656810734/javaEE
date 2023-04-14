@@ -1,0 +1,51 @@
+package network;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+
+/**
+ * @author 26568
+ * @date 2023-04-14 10:47
+ */
+// UDP 回显服务器的服务端
+public class UdpEchoServer {
+    public DatagramSocket socket = null;
+    public UdpEchoServer(int port) {
+        try {
+            this.socket = new DatagramSocket(port);
+        } catch (SocketException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void start() {
+        System.out.println("服务器启动");
+        while (true) {
+            try {
+                // 1.接收请求并解析
+                byte[] buffer = new byte[4096];
+                DatagramPacket packet = new DatagramPacket(buffer,4096);
+                socket.receive(packet);
+                String req = new String(packet.getData(),0, packet.getLength());
+                // 2.根据请求计算响应
+                String resp =process(req);
+                // 3.将响应写回客户端
+                DatagramPacket respPacket = new DatagramPacket(resp.getBytes(),resp.getBytes().length,packet.getSocketAddress());
+                socket.send(respPacket);
+                // 打印一下当前这次请求的处理的中间结果
+                System.out.printf("[%s:%d] req:%s ; resp: %s\n",packet.getAddress().toString(),packet.getPort(),req,resp);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    public String process(String req) {
+        return req;
+    }
+
+    public static void main(String[] args) {
+        UdpEchoServer server = new UdpEchoServer(9090);
+        server.start();
+    }
+}
