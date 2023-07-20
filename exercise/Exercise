@@ -1,0 +1,351 @@
+package exercise;
+
+import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
+
+import java.util.*;
+import java.util.concurrent.*;
+
+
+import java.util.Scanner;
+
+class MyThread  extends Thread {
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println("MyThread");
+        }
+    }
+}
+
+class MyRunnable implements Runnable {
+    @Override
+    public void run() {
+        System.out.println("创建了线程");
+    }
+}
+class MyCallable implements Callable {
+    @Override
+    public Object call() throws Exception {
+        System.out.println("callable创建了线程");
+        return "返回值创建了线程";
+    }
+}
+public class Exercise {
+    public static void main(String[] args) throws InterruptedException {
+
+//       Thread t1 = new MyThread();
+//       // t1.start();
+//        Thread t2 = new Thread(() -> {
+//            while (true) {
+//                try {
+//                    Thread.sleep(500);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//                System.out.println("hello 拉姆达");
+//            }
+//        },"myThread");
+//       // t2.start();
+//        System.out.println(t1.getId());
+//        System.out.println(t2.getId());
+//        System.out.println(t1.getName());
+//        System.out.println(t2.getName());
+//        System.out.println(t1.getPriority());
+//        System.out.println(t2.getPriority());
+//        Thread t = new Thread(() -> {
+//            while (!Thread.currentThread().isInterrupted()) {
+//                System.out.println("hello world");
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                   e.printStackTrace();
+//                }
+//            }
+//        });
+//        t.start();
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//        t.interrupt();
+//        Thread t = new Thread(() -> {
+//            System.out.println("hello Thread");
+//        });
+//        t.start();
+//        try {
+//            t.join();
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+       // System.out.println("hello main");
+//        Object cu = new Object();
+//        Object jiangyou = new Object();
+//        Thread t1 = new Thread(() -> {
+//            synchronized (jiangyou) {
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//                synchronized (cu) {
+//                    System.out.println("小马拿到了醋和酱油");
+//                }
+//            }
+//        });
+//        Thread t2 = new Thread(() -> {
+//            synchronized (jiangyou) {
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//                synchronized(cu) {
+//                    System.out.println("女朋友拿到了醋和酱油");
+//                }
+//            }
+//        });
+//        t2.start();
+//        t1.start();
+//        Object object = new Object();
+//        Thread t1 = new Thread(() -> {
+//            System.out.println("t1: wait之前");
+//            synchronized (object) {
+//                try {
+//                    object.wait();
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
+//            System.out.println("t1: wait 之后");
+//        });
+//        t1.start();
+//        Thread t2 = new Thread(() -> {
+//            System.out.println("t2:notify之前");
+//            synchronized (object) {
+//                object.notify();
+//            }
+//            System.out.println("t2: notify之后");
+//        });
+//        t2.start();
+//        Son son = new Son();
+//        BlockingQueue<Integer> queue = new LinkedBlockingQueue();
+//        Thread customer = new Thread(() -> {
+//            while (true) {
+//                // 从阻塞队列中取元素
+//                try {
+//                    int ret = queue.take();
+//                    System.out.println("消费的元素:ret = "+ret);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
+//        });
+//        customer.start();
+//        Thread producer = new Thread(() -> {
+//            int count = 0;
+//            while (true) {
+//                try {
+//                    queue.put(count);
+//                    System.out.println("生产的元素:"+count);
+//                    count++;
+//                    // 多消费少生产
+//                    Thread.sleep(500);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//
+//            }
+//        });
+//        producer.start();
+//        Timer timer = new Timer();
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                System.out.println("任务3");
+//            }
+//        },3000);
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                System.out.println("任务1");
+//            }
+//        },1000);
+//        MyTimer myTimer = new MyTimer();
+//        myTimer.schedule(new Runnable() {
+//            @Override
+//            public void run() {
+//                System.out.println("任务3");
+//            }
+//        },3000);
+//        myTimer.schedule(new Runnable() {
+//            @Override
+//            public void run() {
+//                System.out.println("任务1");
+//            }
+//        },1500);
+//        ExecutorService pool = Executors.newFixedThreadPool(10);
+//        for (int i = 0; i < 1000; i++) {
+//            int n = i;
+//            pool.submit(new Runnable() {
+//                @Override
+//                public void run() {
+//                    System.out.println("hello:  "+n);
+//                }
+//            });
+//        }
+        MyThreadPool pool = new MyThreadPool(10);
+                for (int i = 0; i < 1000; i++) {
+                int n = i;
+                pool.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("hello:  "+n);
+                    }
+                });
+        }
+    }
+}
+class Father{
+    static
+    {
+        System.out.println("父类的静态代码块");
+    }
+    {
+        System.out.println("父类的实例代码块");
+    }
+    public Father() {
+        System.out.println("父类的构造方法");
+    }
+}
+class Son extends Father{
+    static
+    {
+        System.out.println("子类的静态代码块");
+    }
+    {
+        System.out.println("子类的实例代码块");
+    }
+    public Son() {
+        System.out.println("子类的构造方法");
+    }
+}
+class Singleton {
+    // 在类加载阶段就创建出来
+    private static Singleton instance = new Singleton();
+    // 只能通过get得到这个instance对象
+    public static Singleton getInstance() {
+        return instance;
+    }
+    // 让构造方法私有，只能有一份，不能new
+    private Singleton(){
+
+    }
+}
+class SingtonLazy{
+    private volatile static SingtonLazy instance = null;
+    // 用到才创建
+    public static SingtonLazy getInstance() {
+        // 先判断需不需要加锁
+        if (instance == null) {
+            // 先加锁
+            synchronized (SingtonLazy.class) {
+                // 判断是不是需要创建对象
+                if (instance == null) {
+                    instance = new SingtonLazy();
+                }
+            }
+        }
+        return instance;
+    }
+}
+class MyTask implements Comparable<MyTask>{
+    // 要执行的任务
+    private Runnable runnable = null;
+    // 当前任务的时间
+    private long time;
+    @Override
+    public int compareTo(MyTask o) {
+        return (int)(this.time - o.time);
+    }
+
+    public MyTask(Runnable runnable, long time) {
+        this.runnable = runnable;
+        this.time = time;
+    }
+
+    public void run() {
+        runnable.run();
+    }
+    public long getTime() {
+        return time;
+    }
+}
+ class MyTimer {
+    // 扫描线程
+    Thread t = null;
+    // 优先级阻塞队列
+    PriorityBlockingQueue<MyTask> queue = new PriorityBlockingQueue<MyTask>();
+    public MyTimer() {
+        t = new Thread(() -> {
+            while (true) {
+                synchronized (this) {
+                    // 取出当前队头元素查看时间
+                    long currentTime = System.currentTimeMillis();
+                    try {
+                        MyTask myTask = queue.take();
+                        if (currentTime < myTask.getTime()) {
+                            queue.put(myTask);
+                            // 并且让阻塞等待差值时间执行队头任务
+                            this.wait(myTask.getTime() - currentTime);
+                        } else {
+                            // 队头元素已经要执行了
+                            myTask.run();
+                        }
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
+        t.start();
+    }
+    public void schedule(Runnable runnable,long after) {
+        // 构造任务
+        MyTask myTask = new MyTask(runnable,System.currentTimeMillis()+after);
+        // 将这个任务放入阻塞队列
+        queue.put(myTask);
+        // 唤醒之前队列为空时阻塞的线程
+        synchronized (this) {
+            this.notify();
+        }
+    }
+}
+class MyThreadPool {
+    private BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
+
+    public MyThreadPool(int n) {
+        for (int i = 0; i < n; i++) {
+            Thread t = new Thread(() -> {
+                while (true) {
+                    try {
+                        Runnable runnable = queue.take();
+                        runnable.run();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+            t.start();
+        }
+    }
+    // 注册任务给线程池
+    public void submit(Runnable runnable) throws InterruptedException {
+        queue.put(runnable);
+    }
+}
