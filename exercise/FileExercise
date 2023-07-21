@@ -1,0 +1,108 @@
+package exercise;
+
+import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
+
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
+
+
+import java.util.Scanner;
+import java.util.concurrent.locks.ReentrantLock;
+
+
+public class FileExercise {
+    public static void main(String[] args) throws InterruptedException, IOException {
+//        InputStream inputStream = new FileInputStream("d:/text.txt");
+//        while (true) {
+//            int b = inputStream.read();
+//            if (b == -1) {
+//                break;
+//            }
+//            System.out.printf("%x\n",(byte)b);
+//        }
+//        inputStream.close();
+//        try (OutputStream outputStream = new FileOutputStream("d:/text.txt")){
+//            outputStream.write(97);
+//            outputStream.write(98);
+//            outputStream.write(99);
+//            outputStream.write(100);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println("请输入要删除文件的目录");
+        Scanner scanner = new Scanner(System.in);
+//        String basePath = scanner.next();
+//        File root = new File(basePath);
+//        if (!root.isDirectory()) {
+//            System.out.println("您输入的路径有误");
+//            return;
+//        }
+//        System.out.println("请输入您要删除的文件名");
+//        String nameDelete = scanner.next();
+//        delete(root,nameDelete);
+        System.out.println("请输入你要拷贝的文件");
+        String resource = scanner.next();
+        // 1.判断是不是文件
+        File root = new File(resource);
+        if (!root.isFile()) {
+            System.out.println("您输入的不是文件");
+            return;
+        }
+        // 2.输入目的路径
+        System.out.println("请输入目的路径");
+        String dir = scanner.next();
+        // 是不是目录
+        File dirFile = new File(dir);
+        if (dirFile.isFile()) {
+            // 如果已经是文件了
+            System.out.println("您输入的不是路径");
+            return;
+        }
+        // 使用字节流进行拷贝
+        try (InputStream inputStream = new FileInputStream(root);
+        OutputStream outputStream = new FileOutputStream(dirFile)){
+            // 每字节进行拷贝
+            while (true) {
+                int b = inputStream.read();
+                if (b == -1) {
+                    break;
+                }
+                outputStream.write((byte)b);
+                outputStream.flush();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    // 递归删除
+    private static void delete(File root,String name) {
+        // 1.先得到当前root目录下的所有文件(包括路径和文件)
+        File[] files = root.listFiles();
+        // 如果为空就返回
+        if (files == null) {
+            return;
+        }
+        // 2.不为空就继续递归或者直接判断是不是要删除的文件
+        for(File file:files) {
+            if (file.isDirectory()) {
+                delete(file,name);
+            } else {
+                // 判断当前路径包不包括要删除文件名
+                if (file.getName().contains(name)) {
+                    System.out.println("y or n");
+                    Scanner scanner = new Scanner(System.in);
+                    String input = scanner.next();
+                    if ("y".equals(input)) {
+                        System.out.print("文件:"+file.getAbsolutePath());
+                        System.out.println("删除成功");
+                        file.delete();
+                        return;
+                    } else {
+                        System.out.println("取消删除");
+                    }
+                }
+            }
+        }
+    }
+}
