@@ -1,0 +1,31 @@
+package thread;
+
+import com.sun.xml.internal.stream.util.ThreadLocalBufferAllocator;
+import netscape.security.UserTarget;
+
+import java.util.Scanner;
+
+
+class SingletonLazy {
+    private static SingletonLazy singleton = null;
+    public static SingletonLazygetSingleton() {
+        if (singleton == null) {
+            if (singleton == null) {
+                synchronized (Singleton1.class) {
+                    singleton = new Singleton1();
+                }
+            }
+        }
+        return singleton;
+    }
+    private SingletonLazy(){
+
+    }
+}
+public class SingletonLazyExercise {
+    public static void main(String[] args) throws InterruptedException {
+        SingletonLazy s1 = SingletonLazy.getSingleton();
+        SingletonLazy s2 = SingletonLazy.getSingleton();
+        System.out.println(s1 == s2);
+    }
+}
