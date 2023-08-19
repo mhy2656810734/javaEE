@@ -1,0 +1,55 @@
+class Solution {
+    public int profitPlan(int n, int minProfit, int[] group, int[] profit) {
+        // 分析题目：
+        // 意思是从前i个工作中挑选，总人数不超过n,利润至少为minProfit，总共的选法
+        // 由此可知，这道题是二维费用的01背包问题
+        // 1.状态表示
+        // dp[i][j][k]:表示从前i个工作中挑选，总人数不超过j，利润至少为k，一共有多少中选法
+        // 2.状态转移方程
+        // 根据最后一个位置划分问题
+        // 2.1如果第i个工作不选
+        // dp[i][j][k] = dp[i-1][j][k]
+        // 2.2如果第i个工作选
+        // 先分析:选第i个工作，则要求必须能选group[i]个人，因此 j-group[i] >= 0
+        // 然后， 选第i个工作，则在前i-1个任务中选择的利润是 k-profit[i],但是这个值可能小于0
+        // k-profit[i] < 0 意味着 k <prifit[i]，也就是要求利润至少为k,但是光i位置的利润就已经大于k了
+        // 所以前面i-1个任务就随便选了，k-profit[i] < 0 虽然有意义，但是作为dp的下标来说，不能为负数
+        // 因此，要对这里进行处理，如果k-profit[i] < 0,
+        // 则，让k = 0也就是前i-1个任务选择利润至少为0的即可,也就是随便选
+        // 因此 dp[i][j][k] = dp[i-1][j-group[i]][max(0,k-profit[i])]
+        // 上述二者求和即可
+        // 3.初始化
+        // 只管i-1即可，另外两种一定不越界（处理过了）
+        // i为0表示，在前0个任务中选，k为0表示利润至少为0,当人数不超过j时，怎么选都只有一种选法，也就是不选
+        // 因此 dp[0][j][0] = 1;
+        // 4.填表顺序
+        // i从小到大即可
+        // 5.返回值
+        // dp[len][n][minProfit]
+
+        // 创建dp表
+        // 对结果要模
+        int MOD = (int)1e9 + 7;
+        int len = group.length;
+        int[][][] dp = new int[len+1][n+1][minProfit+1];
+        // 初始化
+        for (int j = 0; j <= n;j++) {
+            dp[0][j][0] = 1;
+        }
+        // 填表
+        for (int i = 1; i <= len;i++) {
+            for (int j = 0; j <= n;j++) {
+                for (int k = 0; k <= minProfit;k++) {
+                    // 先不选i位置工作
+                    dp[i][j][k] = dp[i-1][j][k];
+                    // 满足条件才选i任务
+                    if (j >= group[i-1]) {
+                        dp[i][j][k] += dp[i-1][j-group[i-1]][Math.max(0,k-profit[i-1])];
+                    }
+                    dp[i][j][k] %= MOD;
+                }
+            }
+        }
+        return dp[len][n][minProfit];
+    }
+}
